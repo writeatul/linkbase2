@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Language Links</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        .link-item {
+            display: block;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <%- include('nav') %>
+    
+    <div class="container mt-5">
+        <h3 style="text-align: center;">Shops link</h3>
+        <div id="links-container" class="row">
+            <!-- The data will be dynamically populated here -->
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const response = await fetch('/getshops');
+            const data = await response.json();
+            const linksContainer = document.getElementById('links-container');
+            const languageMap = {};
+
+            // Map of language options to flag emojis
+            const flagMap = {
+                "English": "🇬🇧",
+                "German": "🇩🇪",
+                "Russian": "🇷🇺",
+                "Albanian":"🇦🇱",
+                "Arabic": "🇸🇦",
+                "Azerbaijan": "🇦🇿",
+                "Chinese": "🇨🇳",
+                "Croatia": "🇭🇷",
+                "Czech": "🇨🇿",
+                "Danish": "🇩🇰",
+                "Dutch": "🇳🇱",
+                "French": "🇫🇷",
+                "Georgian": "🇬🇪",
+                "Greek": "🇬🇷",
+                "Indonesian": "🇮🇩",
+                "Italian": "🇮🇹",
+                "Japanese": "🇯🇵",
+                "Malaysian": "🇲🇾",
+                "Persian": "🇮🇷",
+                "Polish": "🇵🇱",
+                "Portuguese": "🇵🇹",
+                "Romanian": "🇷🇴",
+                "Serbian": "🇷🇸",
+                "Spanish": "🇪🇸",
+                "Thai": "🇹🇭",
+                "Turkish": "🇹🇷",
+                "Ukrainian": "🇺🇦",
+                "Uzbek": "🇺🇿",
+                "Vietnamese": "🇻🇳",
+                "N/A": "❓"
+            };
+
+            data.blogsdata.forEach(blog => {
+                const languageOption = blog.languageOption;
+                const flag = flagMap[languageOption] || "";
+
+                if (!languageMap[languageOption]) {
+                    // Create a new section for the language
+                    const colDiv = document.createElement('div');
+                    colDiv.className = 'col-12 col-md-6 col-lg-4';
+
+                    const h5Tag = document.createElement('h3');
+                    h5Tag.textContent = `${languageOption} ${flag}`;
+                    
+                    const linksDiv = document.createElement('div');
+                    linksDiv.className = 'links';
+
+                    colDiv.appendChild(h5Tag);
+                    colDiv.appendChild(linksDiv);
+
+                    linksContainer.appendChild(colDiv);
+                    languageMap[languageOption] = linksDiv;
+                }
+
+                // Create and append the link item
+                const linkItem = document.createElement('div');
+                linkItem.className = 'link-item';
+                linkItem.innerHTML = `<a href="${blog.domain}">${blog.domain}</a>`;
+                languageMap[languageOption].appendChild(linkItem);
+            });
+        });
+    </script>
+</body>
+
+</html>

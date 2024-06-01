@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login Form</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        .form-container {
+            padding: 30px;
+            margin: 30px auto;
+            max-width: 400px;
+            background-color: #f9f9f9;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            font-weight: bold;
+        }
+        .btn--icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn--icon i {
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+    <%- include('nav') %>
+    <div class="container">
+        <div class="form-container">
+            <h2 class="text-center">Login</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" class="form-control" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" class="form-control" id="password" name="password" required>
+                </div>
+                <div class="form-group text-center">
+                    <button type="submit" class="btn btn-primary btn--icon">
+                        <i class="fa fa-sign-in"></i> Login
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+  $(document).ready(function() {
+    $('#loginForm').on('submit', function(event) {
+      event.preventDefault(); // Prevent the default form submission
+      // Get the form data
+      var formData = {
+        email: $('#email').val(),
+        password: $('#password').val()
+      };
+
+      // Send the form data via fetch
+      fetch('/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          // Store the token in local storage
+          localStorage.setItem('token', data.token);
+          
+          // Make a request to /admin with the token in the Authorization header
+          fetch('/admin', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer ' + data.token
+            },
+            body: JSON.stringify({
+              // You can still send other data in the body if needed
+              optionOption: null,
+              languageOption: null
+            })
+          })
+          .then(response => {
+            if (response.ok) {
+              return response.json();
+            } else if (response.status === 401 || response.status === 403) {
+              throw new Error('Unauthorized or token expired');
+            } else {
+              throw new Error('Server error');
+            }
+          })
+          .then(adminData => {
+            // Handle the response from /admin
+            console.log('Admin data:', adminData);
+            // You might want to update the page with this data or redirect
+            // For now, let's just redirect to the admin page
+            window.location.href = '/admin';
+          })
+          .catch(error => {
+            console.error('Error accessing admin:', error);
+            if (error.message === 'Unauthorized or token expired') {
+              alert('Session expired. Please log in again.');
+              localStorage.removeItem('token'); // Clear the invalid token
+              window.location.href = '/login'; // Redirect to login page
+            } else {
+              alert('Error accessing admin page: ' + error.message);
+            }
+          });
+        } else {
+          alert('Login failed: ' + data.message);
+        }
+      })
+      .catch(error => {
+        console.error('An error occurred:', error);
+        alert('An error occurred: ' + error.message);
+      });
+    });
+  });
+
+      </script>
+</body>
+</html>

@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Link</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.ckeditor.com/4.20.1/standard/ckeditor.js"></script>
+    <style>
+        .container {
+            background-color: #e9ecf5;
+        }
+
+        .form-container {
+            padding: 30px;
+            margin: 30px auto;
+            max-width: 800px;
+            background-color: #d7dcec;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(146, 142, 142, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        .btn--icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn--icon i {
+            margin-right: 5px;
+        }
+
+        #hostingFields {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <%- include('nav') %>
+        <div class="container">
+            <div class="form-container">
+                <h2 class="text-center" style="text-decoration: underline;">Add Link</h2>
+                <form action="/submit" method="post" id="addSite">
+                    <div class="form-group">
+                        <label for="domain">URL: *</label>
+                        <input type="url" class="form-control" placeholder="https://example.com" name="domain" required
+                            autofocus>
+                    </div>
+                    <div class="form-group">
+                        <label for="optionOption">Category: *</label>
+                        <select id="categorySelect" class="selectpicker form-control" data-live-search="true"
+                            name="optionOption" required>
+                            <option value="" selected disabled>Please select...</option>
+                            <option value="Blog">Blog</option>
+                            <option value="Board">Board</option>
+                            <option value="GameHacking">GameHacking</option>
+                            <option value="Hosting">Hosting</option>
+                            <option value="Shop">Shop</option>
+                            <option value="Useful">Useful</option>
+                            <option value="VPN">VPN</option>
+                            <option value="Warez">Warez</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="languageOption">Country: *</label>
+                        <select name="languageOption" class="selectpicker form-control" data-live-search="true"
+                        name="languageOption" required>
+                            <option value="" selected disabled>Please select...</option>
+                            <option value="Albanian">Albanian </option>
+                            <option value="Arabic">Arabic </option>
+                            <option value="Azerbaijan">Azerbaijan </option>
+                            <option value="Chinese">Chinese </option>
+                            <option value="Croatia">Croatia </option>
+                            <option value="Czech">Czech </option>
+                            <option value="Danish">Danish </option>
+                            <option value="Dutch">Dutch </option>
+                            <option value="English">English </option>
+                            <option value="French">French </option>
+                            <option value="Georgian">Georgian </option>
+                            <option value="German">German </option>
+                            <option value="Greek">Greek </option>
+                            <option value="Indonesian">Indonesian </option>
+                            <option value="Italian">Italian </option>
+                            <option value="Japanese">Japanese </option>
+                            <option value="Malaysian">Malaysian </option>
+                            <option value="N/A">[none]</option>
+                            <option value="Persian">Persian </option>
+                            <option value="Polish">Polish </option>
+                            <option value="Portuguese">Portuguese </option>
+                            <option value="Romanian">Romanian </option>
+                            <option value="Russian">Russian </option>
+                            <option value="Serbian">Serbian </option>
+                            <option value="Spanish">Spanish </option>
+                            <option value="Thai">Thai </option>
+                            <option value="Turkish">Turkish </option>
+                            <option value="Ukrainian">Ukrainian </option>
+                            <option value="Uzbek">Uzbek </option>
+                            <option value="Vietnamese">Vietnamese </option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="message" class="form-label">Message:</label>
+                        <textarea class="form-control" id="message" name="message" rows="5" required></textarea>
+                        <script>
+                            CKEDITOR.replace('message');
+                        </script>
+                    </div>
+                    <div class="form-group">
+                        <label for="tor">TOR URL:</label>
+                        <input type="url" class="form-control" placeholder="https://domain.onion" name="tor">
+                    </div>
+                    <div class="form-group">
+                        <label for="i2p">I2P URL:</label>
+                        <input type="url" class="form-control" placeholder="https://domain.i2p" name="i2p">
+                    </div>
+                    <div class="form-group">
+                        <label for="blockchain">Blockchain URL:</label>
+                        <input type="url" class="form-control" placeholder="https://domain.bazar" name="blockchain">
+                    </div>
+                    <div class="form-group">
+                        <label for="twitter">Twitter:</label>
+                        <input type="url" class="form-control" placeholder="https://twitter.com/LinkbaseOrg"
+                            name="twitter">
+                    </div>
+                    <div class="form-group">
+                        <label for="facebook">Facebook:</label>
+                        <input type="url" class="form-control" placeholder="https://facebook.com/GroupName"
+                            name="facebook">
+                    </div>
+                    <div class="form-group">
+                        <label for="telegram">Telegram:</label>
+                        <input type="url" class="form-control" placeholder="https://t.me/GroupName" name="telegram">
+                    </div>
+                    <div class="form-group">
+                        <label for="discord">Discord:</label>
+                        <input type="url" class="form-control" placeholder="https://discord.gg/LinkBaseORG"
+                            name="discord">
+                    </div>
+                    <div id="hostingFields">
+                        <h4>Payment Accepted</h4>
+                        <div class="form-group col-lg-4 col-sm-12">
+                            <label for="paypal">PayPal:</label>
+                            <select name="paypal" class="form-control">
+                                <option value="" selected disabled>Please select...</option>
+                                <option value="true">Yes</option>
+                                <option value="false">No</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-lg-4 col-sm-12">
+                            <label for="creditcard">Credit Card:</label>
+                            <select name="creditcard" class="form-control">
+                                <option value="" selected disabled>Please select...</option>
+                                <option value="true">Yes</option>
+                                <option value="false">No</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-lg-4 col-sm-12">
+                            <label for="webmoney">WebMoney:</label>
+                            <select name="webmoney" class="form-control">
+                                <option value="" selected disabled>Please select...</option>
+                                <option value="true">Yes</option>
+                                <option value="false">No</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-lg-4 col-sm-12">
+                            <label for="bitcoin">Bitcoin:</label>
+                            <select name="bitcoin" class="form-control">
+                                <option value="" selected disabled>Please select...</option>
+                                <option value="true">Yes</option>
+                                <option value="false">No</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-lg-8 col-sm-12">
+                            <label for="location">Location:</label>
+                            <input type="text" class="form-control" placeholder="Location address" name="location">
+                        </div>
+                    </div>
+                    <div class="form-group text-center">
+                        <button type="submit" class="btn btn-primary btn--icon">
+                            <i class="fa fa-floppy-o"></i> Add link
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const form = document.getElementById('addSite');
+                var categorySelect = document.getElementById('categorySelect');
+                var hostingFields = document.getElementById('hostingFields');
+
+                categorySelect.addEventListener('change', function () {
+                    if (categorySelect.value === 'Hosting') {
+                        hostingFields.style.display = 'block';
+                        hostingFields.querySelectorAll('select, input').forEach(field => {
+                            field.setAttribute('required', 'required');
+                        });
+                    } else {
+                        hostingFields.style.display = 'none';
+                        hostingFields.querySelectorAll('select, input').forEach(field => {
+                            field.removeAttribute('required');
+                        });
+                    }
+                });
+                form.addEventListener('submit', function (event) {
+                    event.preventDefault();
+                    // Prevent the default form submission
+                    // Get form data
+                    const formData = new FormData(form);
+                    // Convert form data to JSON
+                    const jsonData = {};
+                    formData.forEach((value, key) => {
+                        jsonData[key] = value;
+                    });
+
+                    // Log form data on the frontend
+                    console.log('Submitted Data (Frontend):', jsonData);
+
+                    // Send form data to the backend
+                    fetch('/submit', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(jsonData)
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log('Response from Backend:', data);
+                            alert("Links saved successfully ");
+                            // Change the URL and reload the page
+                            window.location.href = '/admin';
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert("Error while saving the link");
+                        });
+                });
+
+                // Select all elements with the class 'dropdown-toggle'
+                var dropdownToggles = document.querySelectorAll('.dropdown-toggle');
+
+                // Add click event listener to each dropdown toggle element
+                dropdownToggles.forEach(function (toggle) {
+                    toggle.addEventListener('click', function (e) {
+                        e.preventDefault();
+                        // Close any open dropdown menus
+                        closeDropdowns();
+                        // Toggle the display of the corresponding dropdown menu
+                        var dropdownMenu = this.nextElementSibling;
+                        if (dropdownMenu) {
+                            dropdownMenu.style.display = dropdownMenu.style.display === 'block' ? 'none' : 'block';
+                        }
+                    });
+                });
+
+                // Function to close all dropdown menus
+                function closeDropdowns() {
+                    var dropdownMenus = document.querySelectorAll('.dropdown-menu');
+                    dropdownMenus.forEach(function (menu) {
+                        menu.style.display = 'none';
+                    });
+                }
+
+                // Close dropdowns if clicking outside of them
+                document.addEventListener('click', function (e) {
+                    if (!e.target.closest('.dropdown-submenu') && !e.target.closest('.dropdown')) {
+                        closeDropdowns();
+                    }
+                });
+            });
+        </script>
+</body>
+
+</html>

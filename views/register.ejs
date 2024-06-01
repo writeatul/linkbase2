@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Register Form</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        .form-container {
+            padding: 30px;
+            margin: 30px auto;
+            max-width: 500px;
+            background-color: #f9f9f9;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            font-weight: bold;
+        }
+        .btn--icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn--icon i {
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+    <%- include('nav') %>
+    <!-- Include your navigation here -->
+    <div class="container">
+        <div class="form-container">
+            <h2 class="text-center">Register</h2>
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="name">Name:</label>
+                    <input type="text" class="form-control" id="name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" class="form-control" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" class="form-control" id="password" name="password" required>
+                </div>
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm Password:</label>
+                    <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
+                </div>
+                <div class="form-group text-center">
+                    <button type="submit" class="btn btn-primary btn--icon">
+                        <i class="fa fa-user-plus"></i> Register
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const registerForm = document.getElementById('registerForm');
+            registerForm.addEventListener('submit', async (event) => {
+                event.preventDefault(); // Prevent the default form submission
+
+                // Get the form data
+                const formData = new FormData(registerForm);
+                const name = formData.get('name');
+                const email = formData.get('email');
+                const password = formData.get('password');
+
+                // Prepare the request body
+                const requestBody = {
+                    name,
+                    email,
+                    password
+                };
+
+                // Send the form data via fetch
+                try {
+                    const response = await fetch('/register', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(requestBody)
+                    });
+                    const data = await response.json();
+
+                    // Handle the response from the server
+                    if (response.ok) {
+                        alert('Registration successful');
+                        // window.location.href = '/login'; // Redirect on success
+                    } else {
+                        alert('Registration failed: ' + data.message);
+                    }
+                } catch (error) {
+                    // Handle any errors that occurred during the request
+                    alert('An error occurred: ' + error.message);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Contact Form</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.ckeditor.com/4.20.1/standard/ckeditor.js"></script>
+    <style>
+        .container{
+            background-color: #e9ecf5;
+        }
+        .form-container {
+            padding: 30px;
+            margin: 30px auto;
+            max-width: 600px;
+            background-color: #d7dcec;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(146, 142, 142, 0.1);
+        }
+        .form-container h2 {
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .btn-primary {
+            display: block;
+            width: 100%;
+        }
+        .message-container {
+            display: none;
+            font-size: large;
+            font-weight: 800;
+            margin-top: 20px;
+        }
+        .message-container.success {
+            color: green;
+        }
+        .message-container.error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <%- include('nav') %>
+    <div class="container">
+        <div class="form-container">
+            <h2 class="text-center" style="text-decoration: underline;">Send Message</h2>
+            <form id="contactForm">
+                <div class="form-group">
+                    <label for="subject" class="form-label">Subject:</label>
+                    <input type="text" class="form-control" id="subject" required>
+                </div>
+                <div class="form-group">
+                    <label for="message" class="form-label">Message:</label>
+                    <textarea class="form-control" id="message" cols="5" rows="4" maxlength="20" required
+                    oninput="countWords(this)"></textarea>
+                    <script>
+                        CKEDITOR.replace('message');
+                    </script>
+                </div>
+                <div class="form-group">
+                    <label for="name" class="form-label">Name:</label>
+                    <input type="text" class="form-control" id="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="email" class="form-label">Email:</label>
+                    <input type="email" class="form-control" id="email" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Send Message</button>
+            </form>
+            <div class="message-container" id="messageContainer"></div>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('contactForm');
+        const messageContainer = document.getElementById('messageContainer');
+
+        form.addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent form submission
+
+            // Get form data
+            const subject = document.getElementById('subject').value;
+            const message = CKEDITOR.instances.message.getData();
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+
+            // Send form data to server
+            sendFormDataToServer(subject, message, name, email);
+
+            // Reset form fields
+            document.getElementById('subject').value = '';
+            CKEDITOR.instances.message.setData('');
+            document.getElementById('name').value = '';
+            document.getElementById('email').value = '';
+        });
+
+        function sendFormDataToServer(subject, message, name, email) {
+            fetch('/contact', { 
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ subject, message, name, email })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    displayMessage('Form submitted successfully!', 'success');
+                } else {
+                    displayMessage(`Failed to submit form: ${data.message}`, 'error');
+                }
+            })
+            .catch(error => {
+                displayMessage(`Error: ${error.message}`, 'error');
+            });
+
+            console.log('Subject:', subject);
+            console.log('Message:', message);
+            console.log('Name:', name);
+            console.log('Email:', email);
+        }
+        function countWords(textarea) {
+                    const words = textarea.value.trim().split(/\s+/).filter(word => word.length > 0);
+                    const wordCount = words.length;
+                    document.getElementById('wordCount').textContent = `${wordCount}/200 words`;
+                }
+
+        function displayMessage(message, type) {
+            messageContainer.style.display = 'block';
+            messageContainer.textContent = message;
+            messageContainer.className = `message-container ${type}`;
+        }
+    </script>
+</body>
+</html>

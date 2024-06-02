@@ -13,12 +13,70 @@
             max-height: 300px;
             overflow-y: scroll;
         }
+
         .links {
             display: none;
         }
+
         @media (max-width: 768px) {
             .desktop-only {
                 display: none;
+            }
+        }
+
+        #errorMessage {
+            color: red;
+            margin-top: 10px;
+        }
+
+        table {
+            table-layout: fixed;
+            width: 100%;
+        }
+
+        table th,
+        table td {
+            word-wrap: break-word;
+            white-space: normal;
+        }
+
+        .link-text {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            cursor: pointer;
+        }
+
+        .link-text.expanded {
+            white-space: normal;
+            overflow: visible;
+        }
+
+        .btn-spacing {
+            margin-right: 5px;
+        }
+
+        @media (max-width: 768px) {
+
+            table th:nth-child(1),
+            table td:nth-child(1),
+            table th:nth-child(4),
+            table td:nth-child(4),
+            table th:nth-child(12),
+            table td:nth-child(12),
+            table th:nth-child(13),
+            table td:nth-child(13) {
+                display: table-cell;
+            }
+
+            table th:not(:nth-child(1)):not(:nth-child(4)):not(:nth-child(12)):not(:nth-child(13)),
+            table td:not(:nth-child(1)):not(:nth-child(4)):not(:nth-child(12)):not(:nth-child(13)) {
+                display: none;
+            }
+
+            .btn-spacing {
+                display: block;
+                margin-bottom: 5px;
             }
         }
     </style>
@@ -26,210 +84,243 @@
 
 <body>
     <%- include('nav') %>
-    <div class="container">
-        <h1>Admin Panel</h1>
-        <button id="contactMessageBtn" class="btn btn-primary">Contact Message <span id="contactMessageCount">0</span></button>
-        <div id="messageContainer" style="margin-bottom: 10px;"></div>
-        <br>
-        <button id="showLinkBtn" class="btn btn-primary">Show links <span id="showLinkCount">0</span></button>
-        <div class="links">
-            <div class="form-group">
-                <label for="optionOption">Option Option:</label>
-                <select id="optionOption" class="form-control">
-                    <option value="">Select Option</option>
-                    <option value="Blog">Blog</option>
-                    <option value="Board">Board</option>
-                    <option value="GameHacking">GameHacking</option>
-                    <option value="Hosting">Hosting</option>
-                    <option value="Shop">Shop</option>
-                    <option value="Useful">Useful</option>
-                    <option value="VPN">VPN</option>
-                    <option value="Warez">Warez</option>
-                </select>
+        <div class="container">
+            <h1>Admin Panel</h1>
+            <div id="errorMessage"></div>
+            <button id="contactMessageBtn" class="btn btn-primary">Contact Message <span
+                    id="contactMessageCount">0</span></button>
+            <div id="messageContainer" style="margin-bottom: 10px;"></div>
+            <br>
+            <button id="showLinkBtn" class="btn btn-primary">Show links <span id="showLinkCount">0</span></button>
+            <div class="links">
+                <div class="form-group">
+                    <label for="optionOption">Option Option:</label>
+                    <select id="optionOption" class="form-control">
+                        <option value="">Select Option</option>
+                        <option value="Blog">Blog</option>
+                        <option value="Board">Board</option>
+                        <option value="GameHacking">GameHacking</option>
+                        <option value="Hosting">Hosting</option>
+                        <option value="Shop">Shop</option>
+                        <option value="Useful">Useful</option>
+                        <option value="VPN">VPN</option>
+                        <option value="Warez">Warez</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="languageOption">Language Option:</label>
+                    <select id="languageOption" class="form-control">
+                        <option value="">Select Language</option>
+                        <option value="Albanian">Albanian</option>
+                        <option value="Arabic">Arabic</option>
+                        <option value="Azerbaijan">Azerbaijan</option>
+                        <option value="Chinese">Chinese</option>
+                        <option value="Croatia">Croatia</option>
+                        <option value="Czech">Czech</option>
+                        <option value="Danish">Danish</option>
+                        <option value="Dutch">Dutch</option>
+                        <option value="English">English</option>
+                        <option value="French">French</option>
+                        <option value="Georgian">Georgian</option>
+                        <option value="German">German</option>
+                        <option value="Greek">Greek</option>
+                        <option value="Indonesian">Indonesian</option>
+                        <option value="Italian">Italian</option>
+                        <option value="Japanese">Japanese</option>
+                        <option value="Malaysian">Malaysian</option>
+                        <option value="N/A">N/A</option>
+                        <option value="Persian">Persian</option>
+                        <option value="Polish">Polish</option>
+                        <option value="Portuguese">Portuguese</option>
+                        <option value="Romanian">Romanian</option>
+                        <option value="Russian">Russian</option>
+                        <option value="Serbian">Serbian</option>
+                        <option value="Spanish">Spanish</option>
+                        <option value="Thai">Thai</option>
+                        <option value="Turkish">Turkish</option>
+                        <option value="Ukrainian">Ukrainian</option>
+                        <option value="Uzbek">Uzbek</option>
+                        <option value="Vietnamese">Vietnamese</option>
+                    </select>
+                </div>
+
+                <button id="filterBtn" class="btn btn-primary">Filter</button>
+
+                <h3>Total Entries: <span id="totalCount">0</span></h3>
+
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Domain</th>
+                            <th class="desktop-only">Option</th>
+                            <th class="desktop-only">Language</th>
+                            <th>Info</th>
+                            <th class="desktop-only">Tor</th>
+                            <th class="desktop-only">I2P</th>
+                            <th class="desktop-only">Blockchain</th>
+                            <th class="desktop-only">Twitter</th>
+                            <th class="desktop-only">Facebook</th>
+                            <th class="desktop-only">Telegram</th>
+                            <th class="desktop-only">Discord</th>
+                            <th>Add Onsite</th>
+                            <th>Delete</th>
+                        </tr>
+                    </thead>
+                    <tbody id="linksTableBody">
+                        <!-- Data will be appended here -->
+                    </tbody>
+                </table>
             </div>
-
-            <div class="form-group">
-                <label for="languageOption">Language Option:</label>
-                <select id="languageOption" class="form-control">
-                    <option value="">Select Language</option>
-                    <option value="Albanian">Albanian</option>
-                    <option value="Arabic">Arabic</option>
-                    <option value="Azerbaijan">Azerbaijan</option>
-                    <option value="Chinese">Chinese</option>
-                    <option value="Croatia">Croatia</option>
-                    <option value="Czech">Czech</option>
-                    <option value="Danish">Danish</option>
-                    <option value="Dutch">Dutch</option>
-                    <option value="English">English</option>
-                    <option value="French">French</option>
-                    <option value="Georgian">Georgian</option>
-                    <option value="German">German</option>
-                    <option value="Greek">Greek</option>
-                    <option value="Indonesian">Indonesian</option>
-                    <option value="Italian">Italian</option>
-                    <option value="Japanese">Japanese</option>
-                    <option value="Malaysian">Malaysian</option>
-                    <option value="N/A">N/A</option>
-                    <option value="Persian">Persian</option>
-                    <option value="Polish">Polish</option>
-                    <option value="Portuguese">Portuguese</option>
-                    <option value="Romanian">Romanian</option>
-                    <option value="Russian">Russian</option>
-                    <option value="Serbian">Serbian</option>
-                    <option value="Spanish">Spanish</option>
-                    <option value="Thai">Thai</option>
-                    <option value="Turkish">Turkish</option>
-                    <option value="Ukrainian">Ukrainian</option>
-                    <option value="Uzbek">Uzbek</option>
-                    <option value="Vietnamese">Vietnamese</option>
-                </select>
-            </div>
-
-            <button id="filterBtn" class="btn btn-primary">Filter</button>
-
-            <h3>Total Entries: <span id="totalCount">0</span></h3>
-
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Domain</th>
-                        <th class="desktop-only">Option</th>
-                        <th class="desktop-only">Language</th>
-                        <th>Info</th>
-                        <th class="desktop-only">Tor</th>
-                        <th class="desktop-only">I2P</th>
-                        <th class="desktop-only">Blockchain</th>
-                        <th class="desktop-only">Twitter</th>
-                        <th class="desktop-only">Facebook</th>
-                        <th class="desktop-only">Telegram</th>
-                        <th class="desktop-only">Discord</th>
-                        <th>Add Onsite</th>
-                        <th>Delete</th>
-                    </tr>
-                </thead>
-                <tbody id="linksTableBody">
-                    <!-- Data will be appended here -->
-                </tbody>
-            </table>
         </div>
-    </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const filterBtn = document.getElementById('filterBtn');
-            const optionOption = document.getElementById('optionOption');
-            const languageOption = document.getElementById('languageOption');
-            const totalCountElement = document.getElementById('totalCount');
-            const linksTableBody = document.getElementById('linksTableBody');
-            const contactMessageBtn = document.getElementById('contactMessageBtn');
-            const contactMessageCount = document.getElementById('contactMessageCount');
-            const messageContainer = document.getElementById('messageContainer');
-            const showLinkBtn = document.getElementById('showLinkBtn');
-            const linksDiv = document.querySelector('.links');
-    
-            // Show links when "Show links" button is clicked
-            showLinkBtn.addEventListener('click', function () {
-                linksDiv.style.display = 'block';
-            });
-    
-            // Fetch contact message count on page load
-            fetchContactMessageCount();
-    
-            contactMessageBtn.addEventListener('click', function () {
-                fetchContactMessages();
-            });
-    
-            filterBtn.addEventListener('click', function () {
-                const option = optionOption.value;
-                const language = languageOption.value;
-    
-                // Prepare the data to be sent in the body
-                const requestData = {
-                    optionOption: option,
-                    languageOption: language
-                };
-    
-                fetch('/admin', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(requestData)
-                })
-                .then(response => response.json())
-                .then(data => {
-                    // Update total count
-                    totalCountElement.textContent = data.totalCount;
-    
-                    // Clear existing table rows
-                    linksTableBody.innerHTML = '';
-    
-                    // Append new rows
-                    data.links.forEach(link => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${link.domain}</td>
-                            <td>${link.optionOption}</td>
-                            <td>${link.languageOption}</td>
-                            <td>${link.info}</td>
-                            <td>${link.tor}</td>
-                            <td>${link.i2p}</td>
-                            <td>${link.blockchain}</td>
-                            <td>${link.twitter}</td>
-                            <td>${link.facebook}</td>
-                            <td>${link.telegram}</td>
-                            <td>${link.discord}</td>
-                            <td>
-                                <button class="btn btn-success add-onsite-btn" data-id="${link._id}" ${link.approved ? 'disabled' : ''}>
-                                    ${link.approved ? 'Added' : 'Add Onsite'}
-                                </button>
-                            </td>
-                            <td><button class="btn btn-danger delete-link-btn" data-id="${link._id}">Delete</button></td>
-                        `;
-                        linksTableBody.appendChild(row);
-                    });
-    
-                    // Attach event listeners to the new buttons
-                    document.querySelectorAll('.add-onsite-btn').forEach(button => {
-                        button.addEventListener('click', function () {
-                            const linkId = this.getAttribute('data-id');
-                            updateLinkApproved(linkId, this);
-                        });
-                    });
-    
-                    document.querySelectorAll('.delete-link-btn').forEach(button => {
-                        button.addEventListener('click', function () {
-                            const linkId = this.getAttribute('data-id');
-                            deleteLink(linkId);
-                        });
-                    });
-                })
-                .catch(error => {
-                    console.error('Error:', error);
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const filterBtn = document.getElementById('filterBtn');
+                const optionOption = document.getElementById('optionOption');
+                const languageOption = document.getElementById('languageOption');
+                const totalCountElement = document.getElementById('totalCount');
+                const linksTableBody = document.getElementById('linksTableBody');
+                const contactMessageBtn = document.getElementById('contactMessageBtn');
+                const contactMessageCount = document.getElementById('contactMessageCount');
+                const messageContainer = document.getElementById('messageContainer');
+                const showLinkBtn = document.getElementById('showLinkBtn');
+                const linksDiv = document.querySelector('.links');
+                const errorMessage = document.getElementById('errorMessage');
+                const token = localStorage.getItem("token");
+
+                // Show links when "Show links" button is clicked
+                showLinkBtn.addEventListener('click', function () {
+                    linksDiv.style.display = 'block';
                 });
-            });
-    
-            function fetchContactMessageCount() {
-                fetch('/contact-message-count')
-                    .then(response => response.json())
-                    .then(data => {
-                        contactMessageCount.textContent = data.count;
+
+                // Fetch contact message count on page load
+                fetchContactMessageCount();
+
+                contactMessageBtn.addEventListener('click', function () {
+                    fetchContactMessages();
+                });
+
+                filterBtn.addEventListener('click', function () {
+                    const option = optionOption.value;
+                    const language = languageOption.value;
+
+                    // Prepare the data to be sent in the body
+                    const requestData = {
+                        optionOption: option,
+                        languageOption: language
+                    };
+
+                    fetch('/admin', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`,
+                        },
+                        body: JSON.stringify(requestData)
                     })
-                    .catch(error => {
-                        console.error('Error:', error);
-                    });
-            }
-    
-            function fetchContactMessages() {
-                fetch('/contact-messages')
-                    .then(response => response.json())
-                    .then(data => {
-                        messageContainer.innerHTML = '';
-                        data.messages.forEach(message => {
-                            console.log(message);
-                            const messageElement = document.createElement('div');
-                            messageElement.classList.add('card', 'mb-3');
-                            messageElement.innerHTML = `
+                        .then(response => handleFetchErrors(response))
+                        .then(response => response.json())
+                        .then(data => {
+                            // Update total count
+                            totalCountElement.textContent = data.totalCount;
+
+                            // Clear existing table rows
+                            linksTableBody.innerHTML = '';
+
+                            // Append new rows
+                            data.links.forEach(link => {
+                                const row = document.createElement('tr');
+                                row.innerHTML = `
+                            <td class="link-text" title="${link.domain}"><a href="${link.domain}" target="_blank">${link.domain}</a></td>
+                            <td class="desktop-only">${link.optionOption}</td>
+                            <td class="desktop-only">${link.languageOption}</td>
+                            <td class="link-text" title="${link.info}">${link.info}</td>
+                            <td class="desktop-only link-text" title="${link.tor}"><a href="${link.tor}" target="_blank">${link.tor}</a></td>
+                            <td class="desktop-only link-text" title="${link.i2p}"><a href="${link.i2p}" target="_blank">${link.i2p}</a></td>
+                            <td class="desktop-only link-text" title="${link.blockchain}"><a href="${link.blockchain}" target="_blank">${link.blockchain}</a></td>
+                            <td class="desktop-only link-text" title="${link.twitter}"><a href="${link.twitter}" target="_blank">${link.twitter}</a></td>
+                            <td class="desktop-only link-text" title="${link.facebook}"><a href="${link.facebook}" target="_blank">${link.facebook}</a></td>
+                            <td class="desktop-only link-text" title="${link.telegram}"><a href="${link.telegram}" target="_blank">${link.telegram}</a></td>
+                            <td class="desktop-only link-text" title="${link.discord}"><a href="${link.discord}" target="_blank">${link.discord}</a></td>
+                            <td>
+                                  ${link.approved ?
+                                        '<button class="btn btn-success btn-spacing" disabled>Added</button>' :
+                                        `<button class="btn btn-success approve-btn btn-spacing" data-id="${link._id}">Add Onsite</button>`
+                                    }
+                           </td>
+                            <td><button class="btn btn-danger delete-btn btn-spacing" data-id="${link._id}">Delete</button></td>
+                        `;
+                                linksTableBody.appendChild(row);
+                            });
+
+                            // Attach event listeners to the approve and delete buttons
+                            document.querySelectorAll('.approve-btn').forEach(button => {
+                                button.addEventListener('click', function () {
+                                    const linkId = this.getAttribute('data-id');
+                                    updateLinkApproved(linkId, this);
+                                });
+                            });
+
+                            document.querySelectorAll('.delete-btn').forEach(button => {
+                                button.addEventListener('click', function () {
+                                    const linkId = this.getAttribute('data-id');
+                                    deleteLink(linkId);
+                                });
+                            });
+
+                            // Attach event listeners to expand/collapse text
+                            document.querySelectorAll('.link-text').forEach(element => {
+                                element.addEventListener('click', function () {
+                                    this.classList.toggle('expanded');
+                                });
+                            });
+
+                            // Close expanded text when clicking outside
+                            document.addEventListener('click', function (event) {
+                                const isLinkText = event.target.classList.contains('link-text');
+                                if (!isLinkText) {
+                                    document.querySelectorAll('.link-text.expanded').forEach(element => {
+                                        element.classList.remove('expanded');
+                                    });
+                                }
+                            });
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                        });
+                });
+
+                function fetchContactMessageCount() {
+                    fetch('/contact-message-count', {
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                        }
+                    })
+                        .then(response => handleFetchErrors(response))
+                        .then(response => response.json())
+                        .then(data => {
+                            contactMessageCount.textContent = data.count;
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                        });
+                }
+
+                function fetchContactMessages() {
+                    fetch('/contact-messages', {
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                        }
+                    })
+                        .then(response => handleFetchErrors(response))
+                        .then(response => response.json())
+                        .then(data => {
+                            messageContainer.innerHTML = '';
+                            data.messages.forEach(message => {
+                                const messageElement = document.createElement('div');
+                                messageElement.classList.add('card', 'mb-3');
+                                messageElement.innerHTML = `
                                 <div class="card-body">
                                     <h5 class="card-title"><strong>Subject:</strong> ${message.subject}</h5>
                                     <p class="card-text"><strong>Message:</strong> ${message.message}</p>
@@ -239,83 +330,107 @@
                                     <hr class="solid" style="border-top: 3px solid #bbb;">
                                 </div>
                             `;
-                            messageContainer.appendChild(messageElement);
-                        });
-                        document.querySelectorAll('.mark-as-read-btn').forEach(button => {
-                            button.addEventListener('click', function () {
-                                const messageId = this.getAttribute('data-id');
-                                markMessageAsRead(messageId);
+                                messageContainer.appendChild(messageElement);
                             });
+                            document.querySelectorAll('.mark-as-read-btn').forEach(button => {
+                                button.addEventListener('click', function () {
+                                    const messageId = this.getAttribute('data-id');
+                                    markMessageAsRead(messageId);
+                                });
+                            });
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
                         });
+                }
+
+                function markMessageAsRead(messageId) {
+                    // Send POST request to mark message as read
+                    fetch(`/mark-as-read/${messageId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`,
+                        },
+                        body: JSON.stringify({
+                            read: true
+                        }) // Assuming the server expects a JSON body with a 'read' field
                     })
-                    .catch(error => {
-                        console.error('Error:', error);
-                    });
-            }
-    
-            function markMessageAsRead(messageId) {
-                // Send POST request to mark message as read
-                fetch(`/mark-as-read/${messageId}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                        
-                    },
-                    body: JSON.stringify({ read: true }) // Assuming the server expects a JSON body with a 'read' field
-                })
-                .then(response => response.json())
-                .then(data => {
-                    fetchContactMessageCount();
-                    fetchContactMessages();
-                    // Handle response if needed
-                    console.log('Message marked as read:', data);
-                    // Optionally, update UI to reflect the change
-                })
-                .catch(error => {
-                    console.error('Error marking message as read:', error);
-                });
-            }
-    
-            function updateLinkApproved(linkId, button) {
-                fetch(`/update-link/${linkId}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ approved: true })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    console.log('Link approved:', data);
-                    // Disable button and change text to "Added"
-                    button.textContent = 'Added';
-                    button.disabled = true;
-                })
-                .catch(error => {
-                    console.error('Error updating link:', error);
-                });
-            }
-    
-            function deleteLink(linkId) {
-                fetch(`/delete-link/${linkId}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json'
+                        .then(response => handleFetchErrors(response))
+                        .then(response => response.json())
+                        .then(data => {
+                            fetchContactMessageCount();
+                            fetchContactMessages();
+                            // Handle response if needed
+                            // Optionally, update UI to reflect the change
+                        })
+                        .catch(error => {
+                            console.error('Error marking message as read:', error);
+                        });
+                }
+
+                function updateLinkApproved(linkId, button) {
+                    fetch(`/update-link/${linkId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`,
+                        },
+                        body: JSON.stringify({
+                            approved: true
+                        })
+                    })
+                        .then(response => handleFetchErrors(response))
+                        .then(response => response.json())
+                        .then(data => {
+                            // Disable button and change text to "Added"
+                            button.textContent = 'Added';
+                            button.disabled = true;
+                        })
+                        .catch(error => {
+                            console.error('Error updating link:', error);
+                        });
+                }
+
+                function deleteLink(linkId) {
+                    fetch(`/delete-link/${linkId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`,
+                        }
+                    })
+                        .then(response => handleFetchErrors(response))
+                        .then(response => response.json())
+                        .then(data => {
+                            // Optionally, update UI to reflect the change
+                            filterBtn.click(); // Refresh the table
+                        })
+                        .catch(error => {
+                            console.error('Error deleting link:', error);
+                        });
+                }
+
+                function handleFetchErrors(response) {
+                    if (!response.ok) {
+                        if (response.status === 401 || response.status === 403) {
+                            errorMessage.textContent = 'Your session has expired or your token is invalid. Please log in again.';
+
+                            // Clear cookies
+                            localStorage.removeItem('token');
+                            // Redirect to login page after 1 second
+                            setTimeout(() => {
+                                window.location.href = '/login';
+                            }, 1000);
+                        }
+                        throw Error(response.statusText);
                     }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    console.log('Link deleted:', data);
-                    // Optionally, update UI to reflect the change
-                    filterBtn.click(); // Refresh the table
-                })
-                .catch(error => {
-                    console.error('Error deleting link:', error);
-                });
-            }
-        });
-    </script>
-    
+                    return response;
+                }
+
+            });
+        </script>
+
 </body>
 
 </html>

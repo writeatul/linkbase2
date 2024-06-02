@@ -8,6 +8,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
     <title>Navigation Bar</title>
     <style>
         body {
@@ -134,8 +135,7 @@
     <nav class="navbar navbar-inverse navbar-fixed-top">
         <div class="container-fluid">
             <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar" aria-expanded="false"
-                    aria-label="Toggle navigation">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
@@ -145,12 +145,12 @@
             <div class="collapse navbar-collapse" id="myNavbar">
                 <ul class="nav navbar-nav">
                     <li class="dropdown">
-                        <a class="dropdown-toggle" data-toggle="dropdown" href="/board"><i class="fa fa-th"></i> Boards 
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="/board"><i class="fa fa-th"></i> Boards
                             <span class="caret"></span></a>
                         <ul class="dropdown-menu">
                             <li><a href="/board">All board</a></li>
-                            <!-- <li><a href="/board">Option 2</a></li>
-                            <li><a href="/board">Option 3</a></li> -->
+                            <li><a href="/Gaming">Gaming</a></li>
+                            <!-- <li><a href="/board">Option 3</a></li> -->
                         </ul>
                     </li>
                     <li><a href="/blog"><i class="fa fa-book"></i> Blogs</a></li>
@@ -164,7 +164,7 @@
                             Information <span class="caret"></span></a>
                         <ul class="dropdown-menu">
                             <li><a href="/contact"><i class="fa fa-envelope"></i> Contact</a></li>
-                            <li><a href="login"><i class="fa fa-sign-in"></i>  Login</a></li>
+                            <li><a href="login"><i class="fa fa-sign-in"></i> Login</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -173,22 +173,46 @@
     </nav>
 
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             // Fix for dropdown menu not working
             $('.dropdown-toggle').dropdown();
 
-            // Fix for mobile hamburger menu not closing
-            $('.navbar-toggle').click(function() {
+            // Fix for mobile hamburger menu not closing correctly
+            $('.navbar-toggle').click(function (e) {
+                e.stopPropagation();
                 $('.navbar-collapse').collapse('toggle');
             });
 
+            // Close navbar when clicking outside
+            $(document).click(function (e) {
+                if (!$(e.target).closest('.navbar-collapse, .navbar-toggle').length) {
+                    $('.navbar-collapse').collapse('hide');
+                }
+            });
+
+            // Prevent dropdown from closing when clicking inside
+            $('.navbar-collapse .dropdown-menu').click(function (e) {
+                e.stopPropagation();
+            });
+
             // Close dropdown menus when clicking outside
-            $(document).click(function(e) {
+            $(document).click(function (e) {
                 if (!$(e.target).is('.dropdown-toggle') && !$(e.target).parents('.dropdown-menu').length) {
                     $('.navbar-collapse .open').removeClass('open');
                 }
             });
+
+            // Check for token in localStorage and add Admin Panel and Logout button if token exists
+            if (localStorage.getItem("token")) {
+                $('<li><a href="/admin"><i class="fa fa-cogs"></i> Admin Panel</a></li>').insertBefore('.navbar-nav > li.dropdown:last');
+                $('<li><a href="#" onclick="logout()"><i class="fa fa-sign-out"></i> Logout</a></li>').insertBefore('.navbar-nav > li.dropdown:last');
+            }
         });
+
+        function logout() {
+            localStorage.removeItem("token");
+            window.location.href = '/login'; // Redirect to login page after logout
+        }
     </script>
 </body>
 

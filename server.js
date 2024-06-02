@@ -2,8 +2,10 @@ const express= require("express")
 const app=express();
 app.use(express.static("public"));
 app.set("view engine", "ejs")
+require('dotenv').config();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const verifyToken=require("./middleware");
 const mongoose = require('mongoose');
 const db = require("./connection/connection");
 const ContactForm=require("./model/contactFormSchema")
@@ -78,22 +80,9 @@ app.get("/board",(req,res)=>{
     res.render("board");
 })
 
-const verifyToken = (req, res, next) => {
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
-  
-    if (!token) {
-      return res.status(401).json({ error: 'No token provided' });
-    }
-  
-    try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      req.userId = decoded.userId;
-      next();
-    } catch (error) {
-      return res.status(403).json({ error: 'Invalid or expired token' });
-    }
-  };
+app.get("/gaming",(req,res)=>{
+    res.render("gaming");
+})
 
 app.get("/admin",(req,res)=>{
     res.render("admin");
@@ -120,7 +109,6 @@ app.post('/register', async (req, res) => {
 
         // Save the new user document to the database
         await newUser.save();
-        console.log("registered");
         // Send a success response
         res.status(201).json({ success: true, message: 'User registered successfully' });
     } catch (error) {
@@ -134,14 +122,13 @@ app.post('/login', async (req, res) => {
 
         // Find the user by email
         const user = await userSchema.findOne({ email: req.body.email });
-      console.log(user);
         // If user not found or password incorrect
         if (!user || !bcrypt.compareSync(req.body.password, user.password)) {
             return res.status(401).json({ success: false, message: 'Invalid email or password maybe' });
         }
 
         // Generate JWT token
-        const token = jwt.sign({ userId: user._id }, 'your_secret_key', { expiresIn: '1h' });
+        const token = jwt.sign({ userId: user._id }, process.env. JWT_SECRET, { expiresIn: '1h' });
 
         // Send success response with token
         res.status(200).json({ success: true, token: token });
@@ -151,10 +138,9 @@ app.post('/login', async (req, res) => {
     }
 });
 
-
 app.post('/submit', async (req, res) => {
     const formData = req.body;
-    console.log('Received Data (Backend):', formData);
+
     try {
         // Save the code snippet to the database
         const document = await addlink.create({
@@ -176,7 +162,7 @@ app.post('/submit', async (req, res) => {
             location: formData.location
         });
         
-        console.log("Saved successfully:", document);
+        
         res.json({ message: 'Form data received successfully', data: formData });
     } catch (error) {
         console.error("Error saving code snippet:", error);
@@ -189,7 +175,7 @@ app.post('/submit', async (req, res) => {
 app.post('/contact', async (req, res) => {
     try {
         const { subject, message, name, email } = req.body;
-       console.log(req.body); 
+     
         // Create a new contact form entry
         const newContactForm = new ContactForm({
             subject,
@@ -204,7 +190,7 @@ app.post('/contact', async (req, res) => {
         res.status(400).json({ success: false, message: 'Error submitting contact form', error: error.message });
     }
 });
-app.get('/contact-message-count', async (req, res) => {
+app.get('/contact-message-count',verifyToken, async (req, res) => {
     try {
         const unreadCount = await ContactForm.countDocuments({ read: false });
         res.json({ count: unreadCount });
@@ -214,7 +200,7 @@ app.get('/contact-message-count', async (req, res) => {
     }
 });
 
-app.get('/contact-messages', async (req, res) => {
+app.get('/contact-messages',verifyToken, async (req, res) => {
     try {
       const contactMessages = await ContactForm.find().sort({ createdAt: -1 });
       res.json({ messages: contactMessages });
@@ -224,7 +210,7 @@ app.get('/contact-messages', async (req, res) => {
     }
   });
 
-  app.post('/mark-as-read/:id', async (req, res) => {
+  app.post('/mark-as-read/:id',verifyToken, async (req, res) => {
     const messageId = req.params.id;
     try {
         // Update the specific message with the given ID to mark it as read
@@ -237,28 +223,24 @@ app.get('/contact-messages', async (req, res) => {
 });
 
 
-
-
 // Apply the verifyToken middleware to the /admin route
-app.post('/admin', async (req, res) => {
+app.post('/admin',verifyToken, async (req, res) => {
   try {
     const { optionOption, languageOption } = req.body;
     const query = {};
-    console.log(req.body);
 
     if (optionOption) query.optionOption = optionOption;
     if (languageOption) query.languageOption = languageOption;
 
     const links = await addlink.find(query).sort({ createdAt: -1 });
     const totalCount = await addlink.countDocuments(query);
-    console.log(links, totalCount);
     res.json({ links, totalCount });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-app.post('/update-link/:id', async (req, res) => {
+app.post('/update-link/:id',verifyToken, async (req, res) => {
     try {
         const link = await addlink.findByIdAndUpdate(
             req.params.id,
@@ -271,7 +253,7 @@ app.post('/update-link/:id', async (req, res) => {
     }
 });
 
-app.delete('/delete-link/:id', async (req, res) => {
+app.delete('/delete-link/:id',verifyToken, async (req, res) => {
     try {
         await addlink.findByIdAndDelete(req.params.id);
         res.json({ message: 'Link deleted' });
@@ -286,7 +268,6 @@ app.get('/hostings', async (req, res) => {
             optionOption: "Hosting",
             approved: true
         }).sort({ createdAt: -1 });
-        console.log(hostingsdata);
         res.json({ hostingsdata });
     } catch (err) {
         console.error(err);
@@ -300,7 +281,6 @@ app.get('/get-links', async (req, res) => {
             optionOption: "Blog",
             approved: true
         }).sort({ createdAt: -1 });
-        console.log(blogsdata);
         res.json({ blogsdata });
     } catch (err) {
         console.error(err);
@@ -314,7 +294,6 @@ app.get('/getShops', async (req, res) => {
             optionOption: "Shop",
             approved: true
         }).sort({ createdAt: -1 });
-        console.log(shopsdata);
         res.json({ shopsdata });
     } catch (err) {
         console.error(err);
@@ -328,7 +307,6 @@ app.get('/getwarez', async (req, res) => {
             optionOption: "Warez",
             approved: true
         }).sort({ createdAt: -1 });
-        console.log(warezsdata);
         res.json({ warezsdata });
     } catch (err) {
         console.error(err);
@@ -342,7 +320,6 @@ app.get('/getuseful', async (req, res) => {
             optionOption: "Useful",
             approved: true
         }).sort({ createdAt: -1 });
-        console.log(usefulsdata);
         res.json({ usefulsdata });
     } catch (err) {
         console.error(err);
@@ -352,12 +329,24 @@ app.get('/getuseful', async (req, res) => {
 
 app.get('/getboard', async (req, res) => {
     try {
-        const warezsdata = await addlink.find({
+        const boardsdata = await addlink.find({
             optionOption: "Board",
             approved: true
         }).sort({ createdAt: -1 });
-        console.log(warezsdata);
-        res.json({ warezsdata });
+        res.json({ boardsdata });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+app.get('/getgaming', async (req, res) => {
+    try {
+        const gamingdata = await addlink.find({
+            optionOption: "GameHacking",
+            approved: true
+        }).sort({ createdAt: -1 });
+        res.json({ gamingdata });
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: 'Internal server error' });

@@ -101,11 +101,9 @@
             }
           })
           .then(adminData => {
-            // Handle the response from /admin
-            console.log('Admin data:', adminData);
             // You might want to update the page with this data or redirect
             // For now, let's just redirect to the admin page
-            window.location.href = '/admin';
+            window.location.href = '/';
           })
           .catch(error => {
             console.error('Error accessing admin:', error);

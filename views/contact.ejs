@@ -117,11 +117,6 @@
             .catch(error => {
                 displayMessage(`Error: ${error.message}`, 'error');
             });
-
-            console.log('Subject:', subject);
-            console.log('Message:', message);
-            console.log('Name:', name);
-            console.log('Email:', email);
         }
         function countWords(textarea) {
                     const words = textarea.value.trim().split(/\s+/).filter(word => word.length > 0);

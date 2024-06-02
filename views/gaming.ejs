@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shop</title>
+    <title>Gaming</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
@@ -48,7 +48,7 @@
     <%- include('nav') %>
 
     <div class="container mt-5">
-        <h3 style="text-align: center;">Shops</h3>
+        <h3 style="text-align: center;">Game Hacking</h3>
         <div id="links-container" class="row">
             <!-- The data will be dynamically populated here -->
         </div>
@@ -56,7 +56,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
-            const response = await fetch('/getshops');
+            const response = await fetch('/getgaming');
             const data = await response.json();
             const linksContainer = document.getElementById('links-container');
             const languageMap = {};
@@ -95,7 +95,7 @@
                 "N/A": "❓"
             };
 
-            data.shopsdata.forEach(blog => {
+            data.gamingdata.forEach(blog => {
                 const languageOption = blog.languageOption;
                 const flag = flagMap[languageOption] || "";
 

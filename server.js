@@ -21,7 +21,7 @@ db.once("open", () => {
 // Middleware to parse JSON bodies
 app.use(express.json());;
 app.get("/",(req,res)=>{
-    res.render("board");
+    res.render("home");
 })
 
 app.get("/contact",(req,res)=>{
@@ -76,6 +76,10 @@ app.get("/useful",(req,res)=>{
     res.render("useful");
 })
 
+app.get("/vpn",(req,res)=>{
+    res.render("vpn");
+})
+
 app.get("/board",(req,res)=>{
     res.render("board");
 })
@@ -128,7 +132,7 @@ app.post('/login', async (req, res) => {
         }
 
         // Generate JWT token
-        const token = jwt.sign({ userId: user._id }, process.env. JWT_SECRET, { expiresIn: '1h' });
+        const token = jwt.sign({ userId: user._id },"thissisme" , { expiresIn: '1h' });
 
         // Send success response with token
         res.status(200).json({ success: true, token: token });
@@ -145,8 +149,10 @@ app.post('/submit', async (req, res) => {
         // Save the code snippet to the database
         const document = await addlink.create({
             domain: formData.domain,
+            domainName:formData.domainName,
             optionOption: formData.optionOption,
             languageOption: formData.languageOption,
+            approved:formData.approved,
             info: formData.info,
             tor: formData.tor,
             i2p: formData.i2p,
@@ -165,7 +171,7 @@ app.post('/submit', async (req, res) => {
         
         res.json({ message: 'Form data received successfully', data: formData });
     } catch (error) {
-        console.error("Error saving code snippet:", error);
+        console.error("Error while saving :", error);
         // Render an error page with an appropriate error message
         res.status(500).json({
             message: "An error occurred while saving the Links."
@@ -253,6 +259,29 @@ app.post('/update-link/:id',verifyToken, async (req, res) => {
     }
 });
 
+app.get('/show-link-count',verifyToken, async (req, res) => {
+    try {
+        const unreadCount = await addlink.countDocuments({ approved: false });
+        res.json({ count: unreadCount });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+
+app.delete('/messages/:id', verifyToken, async (req, res) => {
+    try {
+
+        const messageId = req.params.id;
+        await ContactForm.findByIdAndDelete(messageId);
+        res.status(200).send({ message: 'Message deleted successfully.' });
+    } catch (error) {
+        console.error('Error deleting message:', error);
+        res.status(500).send({ message: 'Failed to delete message.' });
+    }
+});
+
 app.delete('/delete-link/:id',verifyToken, async (req, res) => {
     try {
         await addlink.findByIdAndDelete(req.params.id);
@@ -269,6 +298,19 @@ app.get('/hostings', async (req, res) => {
             approved: true
         }).sort({ createdAt: -1 });
         res.json({ hostingsdata });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+app.get('/gethome', async (req, res) => {
+    try {
+        const homedata = await addlink.find({
+            optionOption: "Home",
+            approved: true
+        }).sort({ createdAt: -1 });
+        res.json({ homedata });
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: 'Internal server error' });
@@ -334,6 +376,19 @@ app.get('/getboard', async (req, res) => {
             approved: true
         }).sort({ createdAt: -1 });
         res.json({ boardsdata });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+app.get('/getvpn', async (req, res) => {
+    try {
+        const vpndata = await addlink.find({
+            optionOption: "VPN",
+            approved: true
+        }).sort({ createdAt: -1 });
+        res.json({ vpndata });
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: 'Internal server error' });

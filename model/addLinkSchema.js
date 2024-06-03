@@ -5,9 +5,13 @@ const LinkSchema = new mongoose.Schema({
         type: String,
         required: false
     },
+    domainName:{
+        type: String,
+        required: false
+    },
     optionOption: {
         type: String,
-        enum: ['Blog', 'Board', 'GameHacking', 'Hosting', 'Shop', 'Useful', 'VPN', 'Warez'],
+        enum: ['Blog', 'Board', 'GameHacking', 'Hosting', 'Shop', 'Useful', 'VPN', 'Warez','Home'],
         required: false
     },
     languageOption: {

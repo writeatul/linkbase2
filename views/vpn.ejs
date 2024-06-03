@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Useful</title>
+    <title>VPN</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
@@ -77,7 +77,7 @@
                         <i class="fa fa-angle-right" style="margin-left: 5px; margin-right: 5px;"></i>
                     </li>
                     <li>
-                        <a href="/useful" style="text-decoration: none; color: #000;">Useful</a>
+                        <a href="/vpn" style="text-decoration: none; color: #000;">VPN</a>
                     </li>
                 </ul>
             </div>
@@ -89,7 +89,7 @@
 
         <script>
             document.addEventListener('DOMContentLoaded', async () => {
-                const response = await fetch('/getuseful');
+                const response = await fetch('/getvpn');
                 const data = await response.json();
                 const linksContainer = document.getElementById('links-container');
                 const languageMap = {};
@@ -128,7 +128,7 @@
                     "N/A": "❓"
                 };
 
-                data.usefulsdata.forEach(blog => {
+                data.vpndata.forEach(blog => {
                     const languageOption = blog.languageOption;
                     const flag = flagMap[languageOption] || "";
 

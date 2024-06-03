@@ -7,6 +7,9 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <style>
+       body {
+            background-color: white !important;
+        }
         .form-container {
             padding: 30px;
             margin: 30px auto;
@@ -34,8 +37,19 @@
 <body>
     <%- include('nav') %>
     <div class="container">
+      <div class="breadcrumbs" style="display: flex; align-items: center; background-color: #f4f4f4; padding: 4px;">
+        <ul style="list-style: none; display: flex; margin: 0; padding: 0;">
+            <li style="margin-right: 5px;">
+                <a href="/" style="text-decoration: none; color: #000;">Home</a>
+                <i class="fa fa-angle-right" style="margin-left: 5px; margin-right: 5px;"></i>
+            </li>
+            <li>
+                <a href="/login" style="text-decoration: none; color: #000;">Login</a>
+            </li>
+        </ul>
+    </div>
         <div class="form-container">
-            <h2 class="text-center">Login</h2>
+            <h2 class="text-center" style="text-decoration: underline;">Login</h2>
             <form id="loginForm">
                 <div class="form-group">
                     <label for="email">Email:</label>

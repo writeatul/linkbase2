@@ -9,8 +9,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <script src="https://cdn.ckeditor.com/4.20.1/standard/ckeditor.js"></script>
     <style>
+        body {
+            background-color: white !important;
+        }
         .container {
-            background-color: #e9ecf5;
+            background-color: white !important;
         }
 
         .form-container {
@@ -48,19 +51,35 @@
 
 <body>
     <%- include('nav') %>
-        <div class="container">
-            <div class="form-container">
-                <h2 class="text-center" style="text-decoration: underline;">Add Link</h2>
-                <form action="/submit" method="post" id="addSite">
-                    <div class="form-group">
-                        <label for="domain">URL: *</label>
-                        <input type="url" class="form-control" placeholder="https://example.com" name="domain" required
-                            autofocus>
+    <div class="container">
+        <div class="breadcrumbs" style="display: flex; align-items: center; background-color: #f4f4f4; padding: 4px;">
+            <ul style="list-style: none; display: flex; margin: 0; padding: 0;">
+                <li style="margin-right: 5px;">
+                    <a href="/" style="text-decoration: none; color: #000;">Home</a>
+                    <i class="fa fa-angle-right" style="margin-left: 5px; margin-right: 5px;"></i>
+                </li>
+                <li>
+                    <a href="/addlink" style="text-decoration: none; color: #000;">Add Link</a>
+                </li>
+            </ul>
+        </div>
+        <div class="form-container">
+            <!-- <h2 class="text-center" style="text-decoration: underline;">Add Link</h2> -->
+            <form action="/submit" method="post" id="addSite">
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <label for="domainName">Domain Name: *</label>
+                        <input type="text" class="form-control" placeholder="example.com" name="domainName" required autofocus>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group col-md-6">
+                        <label for="domain">URL: *</label>
+                        <input type="url" class="form-control" placeholder="https://example.com" name="domain" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-md-6">
                         <label for="optionOption">Category: *</label>
-                        <select id="categorySelect" class="selectpicker form-control" data-live-search="true"
-                            name="optionOption" required>
+                        <select id="categorySelect" class="selectpicker form-control" data-live-search="true" name="optionOption" required>
                             <option value="" selected disabled>Please select...</option>
                             <option value="Blog">Blog</option>
                             <option value="Board">Board</option>
@@ -68,14 +87,13 @@
                             <option value="Hosting">Hosting</option>
                             <option value="Shop">Shop</option>
                             <option value="Useful">Useful</option>
-                            <!-- <option value="VPN">VPN</option> -->
+                            <option value="VPN">VPN</option>
                             <option value="Warez">Warez</option>
                         </select>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group col-md-6">
                         <label for="languageOption">Country: *</label>
-                        <select name="languageOption" class="selectpicker form-control" data-live-search="true"
-                        name="languageOption" required>
+                        <select name="languageOption" class="selectpicker form-control" data-live-search="true" required>
                             <option value="" selected disabled>Please select...</option>
                             <option value="Albanian">Albanian </option>
                             <option value="Arabic">Arabic </option>
@@ -109,186 +127,181 @@
                             <option value="Vietnamese">Vietnamese </option>
                         </select>
                     </div>
-                    <div class="form-group">
-                        <label for="info" class="form-label">Message:</label>
-                        <textarea class="form-control" id="info" name="info" rows="5" required></textarea>
-                        <script>
-                            CKEDITOR.replace('info');
-                        </script>
-                    </div>
-                    <div class="form-group">
+                </div>
+                <div class="form-group">
+                    <label for="info" class="form-label">Message:</label>
+                    <textarea class="form-control" id="info" name="info" rows="5" required></textarea>
+                    <script>
+                        CKEDITOR.replace('info');
+                    </script>
+                </div>
+                <div class="row">
+                    <div class="form-group col-md-4">
                         <label for="tor">TOR URL:</label>
                         <input type="url" class="form-control" placeholder="https://domain.onion" name="tor">
                     </div>
-                    <div class="form-group">
+                    <div class="form-group col-md-4">
                         <label for="i2p">I2P URL:</label>
                         <input type="url" class="form-control" placeholder="https://domain.i2p" name="i2p">
                     </div>
-                    <div class="form-group">
+                    <div class="form-group col-md-4">
                         <label for="blockchain">Blockchain URL:</label>
                         <input type="url" class="form-control" placeholder="https://domain.bazar" name="blockchain">
                     </div>
-                    <div class="form-group">
+                </div>
+                <div class="row">
+                    <div class="form-group col-md-4">
                         <label for="twitter">Twitter:</label>
-                        <input type="url" class="form-control" placeholder="https://twitter.com/LinkbaseOrg"
-                            name="twitter">
+                        <input type="url" class="form-control" placeholder="https://twitter.com/LinkbaseOrg" name="twitter">
                     </div>
-                    <div class="form-group">
+                    <div class="form-group col-md-4">
                         <label for="facebook">Facebook:</label>
-                        <input type="url" class="form-control" placeholder="https://facebook.com/GroupName"
-                            name="facebook">
+                        <input type="url" class="form-control" placeholder="https://facebook.com/GroupName" name="facebook">
                     </div>
-                    <div class="form-group">
+                    <div class="form-group col-md-4">
                         <label for="telegram">Telegram:</label>
                         <input type="url" class="form-control" placeholder="https://t.me/GroupName" name="telegram">
                     </div>
-                    <div class="form-group">
-                        <label for="discord">Discord:</label>
-                        <input type="url" class="form-control" placeholder="https://discord.gg/LinkBaseORG"
-                            name="discord">
+                </div>
+                <div class="form-group">
+                    <label for="discord">Discord:</label>
+                    <input type="url" class="form-control" placeholder="https://discord.gg/LinkBaseORG" name="discord">
+                </div>
+                <div id="hostingFields">
+                    <h4>Payment Accepted</h4>
+                    <div class="form-group col-lg-4 col-sm-12">
+                        <label for="paypal">PayPal:</label>
+                        <select name="paypal" class="form-control">
+                            <option value="" selected disabled>Please select...</option>
+                            <option value="true">Yes</option>
+                            <option value="false">No</option>
+                        </select>
                     </div>
-                    <div id="hostingFields">
-                        <h4>Payment Accepted</h4>
-                        <div class="form-group col-lg-4 col-sm-12">
-                            <label for="paypal">PayPal:</label>
-                            <select name="paypal" class="form-control">
-                                <option value="" selected disabled>Please select...</option>
-                                <option value="true">Yes</option>
-                                <option value="false">No</option>
-                                Web Developer Intern Jan 2024 - Present
-                                WebGuruz Solutions Mohali, Punjab
-                                
-                                    Underwent comprehensive training in React, honing skills in frontend development over a two-month period.
-                                    Optimized client's e-commerce platform by implementing React's virtual DOM and component-based architecture, resulting in a 40% reduction in page load times and a 25% increase in user engagement.
-                                    Transitioned from training to practical application by leading the development of a live project focused on a dynamic jersey design platform.
-                                    Demonstrated proficiency in React by spearheading the development of a user-friendly jersey customization website, enabling seamless modification of designs through intuitive features like color adjustments, neckline variations, and personalized text input.
-                                                      </select>
-                        </div>
-                        <div class="form-group col-lg-4 col-sm-12">
-                            <label for="creditcard">Credit Card:</label>
-                            <select name="creditcard" class="form-control">
-                                <option value="" selected disabled>Please select...</option>
-                                <option value="true">Yes</option>
-                                <option value="false">No</option>
-                            </select>
-                        </div>
-                        <div class="form-group col-lg-4 col-sm-12">
-                            <label for="webmoney">WebMoney:</label>
-                            <select name="webmoney" class="form-control">
-                                <option value="" selected disabled>Please select...</option>
-                                <option value="true">Yes</option>
-                                <option value="false">No</option>
-                            </select>
-                        </div>
-                        <div class="form-group col-lg-4 col-sm-12">
-                            <label for="bitcoin">Bitcoin:</label>
-                            <select name="bitcoin" class="form-control">
-                                <option value="" selected disabled>Please select...</option>
-                                <option value="true">Yes</option>
-                                <option value="false">No</option>
-                            </select>
-                        </div>
-                        <div class="form-group col-lg-8 col-sm-12">
-                            <label for="location">Location:</label>
-                            <input type="text" class="form-control" placeholder="Location address" name="location">
-                        </div>
+                    <div class="form-group col-lg-4 col-sm-12">
+                        <label for="creditcard">Credit Card:</label>
+                        <select name="creditcard" class="form-control">
+                            <option value="" selected disabled>Please select...</option>
+                            <option value="true">Yes</option>
+                            <option value="false">No</option>
+                        </select>
                     </div>
-                    <div class="form-group text-center">
-                        <button type="submit" class="btn btn-primary btn--icon">
-                            <i class="fa fa-floppy-o"></i> Add link
-                        </button>
+                    <div class="form-group col-lg-4 col-sm-12">
+                        <label for="webmoney">WebMoney:</label>
+                        <select name="webmoney" class="form-control">
+                            <option value="" selected disabled>Please select...</option>
+                            <option value="true">Yes</option>
+                            <option value="false">No</option>
+                        </select>
                     </div>
-                </form>
-            </div>
+                    <div class="form-group col-lg-4 col-sm-12">
+                        <label for="bitcoin">Bitcoin:</label>
+                        <select name="bitcoin" class="form-control">
+                            <option value="" selected disabled>Please select...</option>
+                            <option value="true">Yes</option>
+                            <option value="false">No</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-lg-8 col-sm-12">
+                        <label for="location">Location:</label>
+                        <input type="text" class="form-control" placeholder="Location address" name="location">
+                    </div>
+                </div>
+                <div class="form-group text-center">
+                    <button type="submit" class="btn btn-primary btn--icon">
+                        <i class="fa fa-floppy-o"></i> Add link
+                    </button>
+                </div>
+            </form>
         </div>
+    </div>
 
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                const form = document.getElementById('addSite');
-                var categorySelect = document.getElementById('categorySelect');
-                var hostingFields = document.getElementById('hostingFields');
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('addSite');
+            var categorySelect = document.getElementById('categorySelect');
+            var hostingFields = document.getElementById('hostingFields');
 
-                categorySelect.addEventListener('change', function () {
-                    if (categorySelect.value === 'Hosting') {
-                        hostingFields.style.display = 'block';
-                        hostingFields.querySelectorAll('select, input').forEach(field => {
-                            field.setAttribute('required', 'required');
-                        });
-                    } else {
-                        hostingFields.style.display = 'none';
-                        hostingFields.querySelectorAll('select, input').forEach(field => {
-                            field.removeAttribute('required');
-                        });
-                    }
-                });
-                form.addEventListener('submit', function (event) {
-                    event.preventDefault();
-                    // Prevent the default form submission
-                    // Get form data
-                    const formData = new FormData(form);
-                    // Convert form data to JSON
-                    const jsonData = {};
-                    formData.forEach((value, key) => {
-                        jsonData[key] = value;
+            categorySelect.addEventListener('change', function () {
+                if (categorySelect.value === 'Hosting') {
+                    hostingFields.style.display = 'block';
+                    hostingFields.querySelectorAll('select, input').forEach(field => {
+                        field.setAttribute('required', 'required');
                     });
-
-                    // Log form data on the frontend
-                    console.log('Submitted Data (Frontend):', jsonData);
-
-                    // Send form data to the backend
-                    fetch('/submit', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(jsonData)
-                    })
-                        .then(response => response.json())
-                        .then(data => {
-                            console.log('Response from Backend:', data);
-                            alert("Links saved successfully ");
-                            // Change the URL and reload the page
-                            window.location.href = '/admin';
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            alert("Error while saving the link");
-                        });
-                });
-
-                // Select all elements with the class 'dropdown-toggle'
-                var dropdownToggles = document.querySelectorAll('.dropdown-toggle');
-
-                // Add click event listener to each dropdown toggle element
-                dropdownToggles.forEach(function (toggle) {
-                    toggle.addEventListener('click', function (e) {
-                        e.preventDefault();
-                        // Close any open dropdown menus
-                        closeDropdowns();
-                        // Toggle the display of the corresponding dropdown menu
-                        var dropdownMenu = this.nextElementSibling;
-                        if (dropdownMenu) {
-                            dropdownMenu.style.display = dropdownMenu.style.display === 'block' ? 'none' : 'block';
-                        }
-                    });
-                });
-
-                // Function to close all dropdown menus
-                function closeDropdowns() {
-                    var dropdownMenus = document.querySelectorAll('.dropdown-menu');
-                    dropdownMenus.forEach(function (menu) {
-                        menu.style.display = 'none';
+                } else {
+                    hostingFields.style.display = 'none';
+                    hostingFields.querySelectorAll('select, input').forEach(field => {
+                        field.removeAttribute('required');
                     });
                 }
+            });
+            form.addEventListener('submit', function (event) {
+                event.preventDefault();
+                // Prevent the default form submission
+                // Get form data
+                const formData = new FormData(form);
+                // Convert form data to JSON
+                const jsonData = {};
+                formData.forEach((value, key) => {
+                    jsonData[key] = value;
+                });
 
-                // Close dropdowns if clicking outside of them
-                document.addEventListener('click', function (e) {
-                    if (!e.target.closest('.dropdown-submenu') && !e.target.closest('.dropdown')) {
-                        closeDropdowns();
+                // Log form data on the frontend
+                console.log('Submitted Data (Frontend):', jsonData);
+
+                // Send form data to the backend
+                fetch('/submit', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(jsonData)
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('Response from Backend:', data);
+                        alert("Links saved successfully ");
+                        // Change the URL and reload the page
+                        window.location.href = '/';
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert("Error while saving the link");
+                    });
+            });
+
+            // Select all elements with the class 'dropdown-toggle'
+            var dropdownToggles = document.querySelectorAll('.dropdown-toggle');
+
+            // Add click event listener to each dropdown toggle element
+            dropdownToggles.forEach(function (toggle) {
+                toggle.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    // Close any open dropdown menus
+                    closeDropdowns();
+                    // Toggle the display of the corresponding dropdown menu
+                    var dropdownMenu = this.nextElementSibling;
+                    if (dropdownMenu) {
+                        dropdownMenu.style.display = dropdownMenu.style.display === 'block' ? 'none' : 'block';
                     }
                 });
             });
-        </script>
+
+            // Function to close all dropdown menus
+            function closeDropdowns() {
+                var dropdownMenus = document.querySelectorAll('.dropdown-menu');
+                dropdownMenus.forEach(function (menu) {
+                    menu.style.display = 'none';
+                });
+            }
+
+            // Close dropdowns if clicking outside of them
+            document.addEventListener('click', function (e) {
+                if (!e.target.closest('.dropdown-submenu') && !e.target.closest('.dropdown')) {
+                    closeDropdowns();
+                }
+            });
+        });
+    </script>
 </body>
 
 </html>

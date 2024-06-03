@@ -8,6 +8,10 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <style>
+        body {
+            background-color: white !important;
+        }
+
         @media (max-width: 768px) {
             .hide-on-mobile {
                 display: none;
@@ -35,8 +39,19 @@
 <body>
     <%- include('nav') %>
     <div class="container">
-        <h2 style="text-align: center;"><i class="fa fa-server"></i> Hosting List</h2>
-        <table class="table table-striped table-bordered table-hover">
+        <!-- <h2 style="text-align: center; text-decoration: underline;"><i class="fa fa-server"></i> Hosting List</h2> -->
+        <div class="breadcrumbs" style="display: flex; align-items: center; background-color: #f4f4f4; padding: 4px;">
+            <ul style="list-style: none; display: flex; margin: 0; padding: 0;">
+                <li style="margin-right: 5px;">
+                    <a href="/" style="text-decoration: none; color: #000;">Home</a>
+                    <i class="fa fa-angle-right" style="margin-left: 5px; margin-right: 5px;"></i>
+                </li>
+                <li>
+                    <a href="/hosting" style="text-decoration: none; color: #000;">Hosting</a>
+                </li>
+            </ul>
+        </div>
+        <table class="table table-striped table-bordered table-hover" style="margin-top: 20px;">
             <thead>
                 <tr class="bg-primary">
                     <th>Service <i class="fa fa-cogs"></i></th>

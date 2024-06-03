@@ -17,7 +17,7 @@
         }
 
         .navbar {
-            background-color: #333;
+            background-color: #368ee0;
             border: none;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
             position: fixed;
@@ -43,23 +43,27 @@
         .navbar-nav>li>a {
             color: #fff !important;
             transition: background-color 0.3s;
-            padding: 15px 20px;
+           
         }
 
         .navbar-nav>li>a:hover {
-            background-color: #444 !important;
+            background-color: #1e74c5 !important;
+        }
+
+        .active > a {
+            background-color: #1e74c5 !important;
         }
 
         .dropdown-menu {
-            background-color: #333;
+            background-color: white;
         }
 
         .dropdown-menu>li>a {
-            color: #fff;
+            color: #1e74c5;
         }
 
         .dropdown-menu>li>a:hover {
-            background-color: #444;
+            background-color: #368ee0;
         }
 
         .navbar-toggle {
@@ -82,11 +86,15 @@
 
             .navbar-collapse {
                 border-top: 1px solid transparent;
-                box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+                box-shadow: inset 0 1px 0 rgba(228, 221, 221, 0.1);
             }
 
             .navbar-collapse.collapse {
                 display: none !important;
+            }
+
+            .navbar-inverse .navbar-nav > .open > a {
+                background-color: #368ee0 !important;
             }
 
             .navbar-nav {
@@ -125,7 +133,7 @@
             }
 
             .navbar-nav .open .dropdown-menu>li>a:hover {
-                background-color: #444;
+                background-color: #1e74c5;
             }
         }
     </style>
@@ -140,7 +148,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="/board">Link-Base</a>
+                <a class="navbar-brand" href="/">Link-Base</a>
             </div>
             <div class="collapse navbar-collapse" id="myNavbar">
                 <ul class="nav navbar-nav">
@@ -157,6 +165,7 @@
                     <li><a href="/shop"><i class="fa fa-shopping-cart"></i> Shops</a></li>
                     <li><a href="/Warez"><i class="fa fa-download"></i> Warez</a></li>
                     <li><a href="/Useful"><i class="fa fa-wrench"></i> Useful</a></li>
+                    <li><a href="/vpn"><i class="fa fa-shield fa-fw"></i> VPN</a></li>
                     <li><a href="/hosting"><i class="fa fa-server"></i> Hosting</a></li>
                     <li><a href="/addlink"><i class="fa fa-plus"></i> Add</a></li>
                     <li class="dropdown">
@@ -207,6 +216,14 @@
                 $('<li><a href="/admin"><i class="fa fa-cogs"></i> Admin Panel</a></li>').insertBefore('.navbar-nav > li.dropdown:last');
                 $('<li><a href="#" onclick="logout()"><i class="fa fa-sign-out"></i> Logout</a></li>').insertBefore('.navbar-nav > li.dropdown:last');
             }
+
+            // Highlight current page in navbar
+            var path = window.location.pathname;
+            $('.navbar-nav > li > a').each(function() {
+                if (this.pathname === path) {
+                    $(this).parent().addClass('active');
+                }
+            });
         });
 
         function logout() {

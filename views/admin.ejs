@@ -19,6 +19,10 @@
             display: none;
         }
 
+        #hostingFields {
+            display: none;
+        }
+
 
         #messageContainer {
             max-height: 65vh;
@@ -189,14 +193,22 @@
                 <form action="/submit" method="post" id="addSite">
                     <div class="form-group">
                         <label for="optionOption">Option Option:</label>
-                        <select id="optionOption" name="optionOption" class="form-control">
+                        <select id="formOptionOption" name="optionOption" class="form-control" required>
                             <option value="">Select Option</option>
                             <option value="Home">Home Page</option>
+                            <option value="Blog">Blog</option>
+                            <option value="Board">Board</option>
+                            <option value="GameHacking">GameHacking</option>
+                            <option value="Hosting">Hosting</option>
+                            <option value="Shop">Shop</option>
+                            <option value="Useful">Useful</option>
+                            <option value="VPN">VPN</option>
+                            <option value="Warez">Warez</option>
                         </select>
                     </div>
                     <div class="form-group">
                         <label for="languageOption">Language Option:</label>
-                        <select id="languageOption" name="languageOption" class="form-control">
+                        <select id="languageOption" name="languageOption" class="form-control" required>
                             <option value="">Select Language</option>
                             <option value="Albanian">Albanian</option>
                             <option value="Arabic">Arabic</option>
@@ -232,13 +244,66 @@
                     </div>
                     <div class="form-group">
                         <label for="newLinkName">Link Name:</label>
-                        <input type="text" id="newLinkName" name="domainName" class="form-control">
+                        <input type="text" id="newLinkName" name="domainName" class="form-control" required>
                     </div>
                     <div class="form-group">
                         <label for="newLinkUrl">Link URL:</label>
-                        <input type="url" id="newLinkUrl" name="domain" class="form-control">
+                        <input type="url" id="newLinkUrl" name="domain" class="form-control" required>
                     </div>
-                    <button type="submit" id="submitLinkBtn" class="btn btn-primary">Submit</button>
+                    <div id="hostingFields">
+                        <h4>Payment Accepted</h4>
+                        <div class="form-group col-md-4">
+                            <label for="twitter">Twitter:</label>
+                            <input type="url" class="form-control" placeholder="https://twitter.com/LinkbaseOrg"
+                                name="twitter">
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="facebook">Facebook:</label>
+                            <input type="url" class="form-control" placeholder="https://facebook.com/GroupName"
+                                name="facebook">
+                        </div>
+                        <div class="form-group col-lg-4 col-sm-12">
+                            <label for="paypal">PayPal:</label>
+                            <select name="paypal" class="form-control">
+                                <option value="" selected disabled>Please select...</option>
+                                <option value="true">Yes</option>
+                                <option value="false">No</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-lg-4 col-sm-12">
+                            <label for="creditcard">Credit Card:</label>
+                            <select name="creditcard" class="form-control">
+                                <option value="" selected disabled>Please select...</option>
+                                <option value="true">Yes</option>
+                                <option value="false">No</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-lg-4 col-sm-12">
+                            <label for="webmoney">WebMoney:</label>
+                            <select name="webmoney" class="form-control">
+                                <option value="" selected disabled>Please select...</option>
+                                <option value="true">Yes</option>
+                                <option value="false">No</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-lg-4 col-sm-12">
+                            <label for="bitcoin">Bitcoin:</label>
+                            <select name="bitcoin" class="form-control">
+                                <option value="" selected disabled>Please select...</option>
+                                <option value="true">Yes</option>
+                                <option value="false">No</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-lg-8 col-sm-12">
+                            <label for="location">Location:</label>
+                            <input type="text" class="form-control" placeholder="Location address" name="location">
+                        </div>
+                    </div>
+                    <div>
+
+                        <button type="submit" id="submitLinkBtn" class="btn btn-primary">Submit</button>
+                    </div>
+
                 </form>
             </div>
         </div>
@@ -260,10 +325,11 @@
                 const addlinkform = document.querySelector('addLinkForm');
                 const errorMessage = document.getElementById('errorMessage');
                 const token = localStorage.getItem("token");
-
+                const submitBtn = document.getElementById('submitLinkBtn');
+                const hostingFields = document.getElementById('hostingFields');
                 // Fetch contact message count on page load
                 fetchContactMessageCount();
-
+                fetchShowLinkCount();
                 contactMessageBtn.addEventListener('click', function () {
                     fetchContactMessages();
                     toggleDisplay(messageContainer);
@@ -286,6 +352,29 @@
                 function toggleDisplay(element) {
                     element.style.display = element.style.display === 'none' || element.style.display === '' ? 'block' : 'none';
                 }
+                function handleFetchErrors(response) {
+                    if (!response.ok) {
+                        if (response.status === 401 || response.status === 403) {
+                            showError('Your session has expired or your token is invalid. Please log in again.');
+                            localStorage.removeItem('token');
+                            setTimeout(() => { window.location.href = '/login'; }, 1000);
+                        } else if (response.status === 404) {
+                            showError('The requested resource was not found.');
+                        } else if (response.status === 500) {
+                            showError('Internal server error. Please try again later.');
+                        } else {
+                            showError(`Error: ${response.statusText}`);
+                        }
+                        throw Error(response.statusText);
+                    }
+                    return response;
+                }
+
+                function showError(message) {
+                    errorMessage.innerHTML = `<div class="alert alert-danger" style="color: red; font-size: 1.5em; font-weight: bold;">${message}</div>`;
+                    errorMessage.style.display = 'block';
+                }
+
 
                 submitLinkBtn.addEventListener('click', function () {
                     const newLinkName = document.getElementById('newLinkName').value;
@@ -314,6 +403,15 @@
                         languageOption: language
                     };
 
+                    // Clear existing table rows and show loading message
+                    linksTableBody.innerHTML = `
+        <tr>
+            <td colspan="13" style="text-align: center; padding: 20px;">
+                <i class="fa fa-spinner fa-spin" style="font-size:24px"></i> 
+                Fetching data, please wait...
+            </td>
+        </tr>`;
+
                     fetch('/admin', {
                         method: 'POST',
                         headers: {
@@ -322,17 +420,21 @@
                         },
                         body: JSON.stringify(requestData)
                     })
-                        .then(response => handleFetchErrors(response))
-                        .then(response => response.json())
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error(`HTTP error! status: ${response.status}`);
+                            }
+                            return response.json();
+                        })
                         .then(data => {
                             // Update total count
                             if (data.totalCount === 0) {
-                                totalCountElement.textContent = "Nothing to show"
+                                totalCountElement.textContent = "Nothing to show";
                                 totalCountElement.style.color = "red";
                             } else {
                                 totalCountElement.textContent = data.totalCount;
+                                totalCountElement.style.color = ""; // Reset color
                             }
-
 
                             // Clear existing table rows
                             linksTableBody.innerHTML = '';
@@ -341,25 +443,25 @@
                             data.links.forEach(link => {
                                 const row = document.createElement('tr');
                                 row.innerHTML = `
-                            <td class="link-text" title="${link.domain}"><a href="${link.domain}" target="_blank">${link.domain}</a></td>
-                            <td class="desktop-only">${link.optionOption}</td>
-                            <td class="desktop-only">${link.languageOption}</td>
-                            <td class="link-text" title="${link.info}">${link.info}</td>
-                            <td class="desktop-only link-text" title="${link.tor}"><a href="${link.tor}" target="_blank">${link.tor}</a></td>
-                            <td class="desktop-only link-text" title="${link.i2p}"><a href="${link.i2p}" target="_blank">${link.i2p}</a></td>
-                            <td class="desktop-only link-text" title="${link.blockchain}"><a href="${link.blockchain}" target="_blank">${link.blockchain}</a></td>
-                            <td class="desktop-only link-text" title="${link.twitter}"><a href="${link.twitter}" target="_blank">${link.twitter}</a></td>
-                            <td class="desktop-only link-text" title="${link.facebook}"><a href="${link.facebook}" target="_blank">${link.facebook}</a></td>
-                            <td class="desktop-only link-text" title="${link.telegram}"><a href="${link.telegram}" target="_blank">${link.telegram}</a></td>
-                            <td class="desktop-only link-text" title="${link.discord}"><a href="${link.discord}" target="_blank">${link.discord}</a></td>
-                            <td>
-                                  ${link.approved ?
+                <td class="link-text" title="${link.domain}"><a href="${link.domain}" target="_blank">${link.domain}</a></td>
+                <td class="desktop-only">${link.optionOption}</td>
+                <td class="desktop-only">${link.languageOption}</td>
+                <td class="link-text" title="${link.info}">${link.info}</td>
+                <td class="desktop-only link-text" title="${link.tor}"><a href="${link.tor}" target="_blank">${link.tor}</a></td>
+                <td class="desktop-only link-text" title="${link.i2p}"><a href="${link.i2p}" target="_blank">${link.i2p}</a></td>
+                <td class="desktop-only link-text" title="${link.blockchain}"><a href="${link.blockchain}" target="_blank">${link.blockchain}</a></td>
+                <td class="desktop-only link-text" title="${link.twitter}"><a href="${link.twitter}" target="_blank">${link.twitter}</a></td>
+                <td class="desktop-only link-text" title="${link.facebook}"><a href="${link.facebook}" target="_blank">${link.facebook}</a></td>
+                <td class="desktop-only link-text" title="${link.telegram}"><a href="${link.telegram}" target="_blank">${link.telegram}</a></td>
+                <td class="desktop-only link-text" title="${link.discord}"><a href="${link.discord}" target="_blank">${link.discord}</a></td>
+                <td>
+                    ${link.approved ?
                                         '<button class="btn btn-success btn-spacing" disabled>Added</button>' :
                                         `<button class="btn btn-success approve-btn btn-spacing" data-id="${link._id}">Add Onsite</button>`
                                     }
-                           </td>
-                            <td><button class="btn btn-danger delete-btn btn-spacing" data-id="${link._id}">Delete</button></td>
-                        `;
+                </td>
+                <td><button class="btn btn-danger delete-btn btn-spacing" data-id="${link._id}">Delete</button></td>
+            `;
                                 linksTableBody.appendChild(row);
                             });
 
@@ -375,6 +477,7 @@
                                 button.addEventListener('click', function () {
                                     const linkId = this.getAttribute('data-id');
                                     deleteLink(linkId);
+                                    fetchShowLinkCount();
                                 });
                             });
 
@@ -397,6 +500,17 @@
                         })
                         .catch(error => {
                             console.error('Error:', error);
+                            // Display error message in the table
+                            linksTableBody.innerHTML = `
+            <tr>
+                <td colspan="13" style="text-align: center; padding: 20px; color: red; font-weight: bold;">
+                    <i class="fa fa-exclamation-triangle" style="font-size:24px"></i> 
+                    Error: ${error.message || "Failed to fetch data"}
+                </td>
+            </tr>`;
+                            // Also update the error message div for consistency
+                            errorMessage.innerHTML = `<div class="alert alert-danger" style="color: red; font-size: 1.2em; font-weight: bold;">${error.message || "Error while fetching data link"}</div>`;
+                            errorMessage.style.display = 'block';
                         });
                 });
 
@@ -413,74 +527,129 @@
                         })
                         .catch(error => {
                             console.error('Error:', error);
+                            errorMessage.textContent = error.message || "Error while fetching data link";
+                            errorMessage.style.display = 'block';
                         });
                 }
 
                 function fetchContactMessages() {
+                    // Show loading message
+                    messageContainer.innerHTML = `
+        <div class="card mb-3">
+            <div class="card-body text-center">
+                <i class="fa fa-spinner fa-spin" style="font-size:48px; color:#337ab7;"></i>
+                <h4 style="margin-top: 15px;">Fetching messages, please wait...</h4>
+            </div>
+        </div>`;
+
                     fetch('/contact-messages', {
                         headers: {
                             'Authorization': `Bearer ${token}`,
                         }
                     })
-                        .then(response => handleFetchErrors(response))
-                        .then(response => response.json())
+                        .then(response => {
+                            if (!response.ok) {
+                                if (response.status === 401 || response.status === 403) {
+                                    throw new Error('Your session has expired or your token is invalid. Please log in again.');
+                                } else if (response.status === 404) {
+                                    throw new Error('The message resource was not found.');
+                                } else if (response.status === 500) {
+                                    throw new Error('Internal server error. Our team has been notified.');
+                                } else {
+                                    throw new Error(`HTTP error! status: ${response.status}`);
+                                }
+                            }
+                            return response.json();
+                        })
                         .then(data => {
-                            messageContainer.innerHTML = '';
-                            data.messages.forEach(message => {
-                                const messageElement = document.createElement('div');
-                                messageElement.classList.add('card', 'mb-3');
-                                messageElement.innerHTML = `
-                                <div class="card-body">
-                                    <h5 class="card-title"><strong>Subject:</strong> ${message.subject}</h5>
-                                    <p class="card-text link-text"><strong>Message:</strong> ${message.message}</p>
-                                    <p class="card-text" ><strong>Name:</strong> ${message.name}</p>
-                                    <p class="card-text"><strong>Email:</strong> <a href="mailto:${message.email}">${message.email}</a></p>
-                                    ${message.read ? '' : `<button class="btn btn-primary mark-as-read-btn" data-id="${message._id}">Mark as Read</button>`}
-                                    <button class="btn btn-danger delete-btn btn-spacing" data-id="${message._id}">Delete</button>
-                                    <hr class="solid" style="border-top: 3px solid #bbb;">
-                                </div>
-                            `;
-                                messageContainer.appendChild(messageElement);
-                            });
-                            document.querySelectorAll('.mark-as-read-btn').forEach(button => {
-                                button.addEventListener('click', function () {
-                                    const messageId = this.getAttribute('data-id');
-                                    markMessageAsRead(messageId);
+                            if (data.messages.length === 0) {
+                                messageContainer.innerHTML = `
+                <div class="card mb-3">
+                    <div class="card-body text-center">
+                        <i class="fa fa-envelope-o" style="font-size:48px; color:#5bc0de;"></i>
+                        <h4 style="margin-top: 15px; color: #5bc0de;">No messages available</h4>
+                        <p>Your inbox is empty at the moment.</p>
+                    </div>
+                </div>`;
+                            } else {
+                                messageContainer.innerHTML = '';
+                                data.messages.forEach(message => {
+                                    const messageElement = document.createElement('div');
+                                    messageElement.classList.add('card', 'mb-3');
+                                    messageElement.innerHTML = `
+                    <div class="card-body">
+                        <h5 class="card-title"><strong>Subject:</strong> ${message.subject}</h5>
+                        <p class="card-text link-text"><strong>Message:</strong> ${message.message}</p>
+                        <p class="card-text"><strong>Name:</strong> ${message.name}</p>
+                        <p class="card-text"><strong>Email:</strong> <a href="mailto:${message.email}">${message.email}</a></p>
+                        ${message.read ? '' : `<button class="btn btn-primary mark-as-read-btn" data-id="${message._id}">Mark as Read</button>`}
+                        <button class="btn btn-danger delete-btn btn-spacing" data-id="${message._id}">Delete</button>
+                        <hr class="solid" style="border-top: 3px solid #bbb;">
+                    </div>
+                `;
+                                    messageContainer.appendChild(messageElement);
                                 });
-                            });
-                            document.querySelectorAll('.delete-btn').forEach(button => {
-                                button.addEventListener('click', function () {
-                                    const messageId = this.getAttribute('data-id');
-                                    if (confirm('Are you sure you want to delete this message?')) {
-                                        fetch(`/messages/${messageId}`, {
-                                            method: 'DELETE',
-                                            headers: {
-                                                'Content-Type': 'application/json',
-                                                'Authorization': `Bearer ${token}`,
-                                            }
-                                        })
-                                            .then(response => {
-                                                if (response.ok) {
-                                                    alert('Message deleted successfully.');
-                                                    // Remove the message card from the DOM
-                                                    this.closest('.card-body').remove();
-                                                } else {
-                                                    alert('Failed to delete the message.');
+
+                                // Attach event listeners
+                                document.querySelectorAll('.mark-as-read-btn').forEach(button => {
+                                    button.addEventListener('click', function () {
+                                        const messageId = this.getAttribute('data-id');
+                                        markMessageAsRead(messageId);
+                                    });
+                                });
+
+                                document.querySelectorAll('.delete-btn').forEach(button => {
+                                    button.addEventListener('click', function () {
+                                        const messageId = this.getAttribute('data-id');
+                                        if (confirm('Are you sure you want to delete this message?')) {
+                                            fetch(`/messages/${messageId}`, {
+                                                method: 'DELETE',
+                                                headers: {
+                                                    'Content-Type': 'application/json',
+                                                    'Authorization': `Bearer ${token}`,
                                                 }
                                             })
-                                            .catch(error => {
-                                                console.error('Error:', error);
-                                                alert('An error occurred while deleting the message.');
-                                            });
-                                    }
+                                                .then(response => handleFetchErrors(response))
+                                                .then(data => {
+                                                    alert('Message deleted successfully.');
+                                                    this.closest('.card').remove();
+                                                    fetchContactMessageCount(); // Update the count after deletion
+                                                })
+                                                .catch(error => {
+                                                    console.error('Error:', error);
+                                                    alert('An error occurred while deleting the message.');
+                                                });
+                                        }
+                                    });
                                 });
-                            });
+                            }
                         })
-
                         .catch(error => {
                             console.error('Error:', error);
+                            messageContainer.innerHTML = `
+            <div class="card mb-3">
+                <div class="card-body text-center">
+                    <i class="fa fa-exclamation-triangle" style="font-size:48px; color:red;"></i>
+                    <h4 style="margin-top: 15px; color: red;">Error Occurred</h4>
+                    <p>${error.message || "Failed to fetch messages. Please try again."}</p>
+                    <button class="btn btn-primary retry-btn">Retry</button>
+                </div>
+            </div>`;
+
+                            // Add event listener to the retry button
+                            const retryBtn = document.querySelector('.retry-btn');
+                            if (retryBtn) {
+                                retryBtn.addEventListener('click', fetchContactMessages);
+                            }
+
+                            // If it's an authentication error, redirect to login
+                            if (error.message && (error.message.includes('session has expired') || error.message.includes('token is invalid'))) {
+                                localStorage.removeItem('token');
+                                setTimeout(() => { window.location.href = '/login'; }, 2000);
+                            }
                         });
                 }
+
 
                 function markMessageAsRead(messageId) {
                     // Send POST request to mark message as read
@@ -504,6 +673,7 @@
                         })
                         .catch(error => {
                             console.error('Error marking message as read:', error);
+                            alert("Error marking message as read");
                         });
                 }
 
@@ -524,6 +694,7 @@
                             // Disable button and change text to "Added"
                             button.textContent = 'Added';
                             button.disabled = true;
+                            fetchShowLinkCount();
                         })
                         .catch(error => {
                             console.error('Error updating link:', error);
@@ -543,6 +714,7 @@
                         .then(data => {
                             // Optionally, update UI to reflect the change
                             filterBtn.click(); // Refresh the table
+                            fetchShowLinkCount();
                         })
                         .catch(error => {
                             console.error('Error deleting link:', error);
@@ -556,8 +728,14 @@
                             'Authorization': `Bearer ${token}`,
                         }
                     })
-                        .then(response => handleFetchErrors(response))
-                        .then(response => response.json())
+                        .then(response => {
+                            if (!response.ok) {
+                                // If the response status is not in the 200-299 range
+                                throw new Error(`HTTP error! status: ${response.status}`);
+                            }
+                            handleFetchErrors(response);  // Pass response to handleFetchErrors
+                            return response.json();  // Return the promise from response.json()
+                        })
                         .then(data => {
                             const showLinkCount = document.getElementById('showLinkCount');
                             showLinkCount.textContent = data.count;
@@ -566,11 +744,9 @@
                             console.error('Error:', error);
                         });
                 }
-
                 // Fetch the show link count on page load
                 fetchShowLinkCount();
 
-                // Rest of your existing code...
 
                 function handleFetchErrors(response) {
                     if (!response.ok) {
@@ -589,25 +765,23 @@
                     return response;
                 }
 
-                function handleFetchErrors(response) {
-                    if (!response.ok) {
-                        if (response.status === 401 || response.status === 403) {
-                            errorMessage.textContent = 'Your session has expired or your token is invalid. Please log in again.';
-
-                            // Clear cookies
-                            localStorage.removeItem('token');
-                            // Redirect to login page after 1 second
-                            setTimeout(() => {
-                                window.location.href = '/login';
-                            }, 1000);
-                        }
-                        throw Error(response.statusText);
-                    }
-                    return response;
-                }
-            });
-            document.addEventListener('DOMContentLoaded', (event) => {
                 const form = document.getElementById('addSite');
+                const formOptionOption = document.getElementById('formOptionOption');
+
+
+                formOptionOption.addEventListener('change', function () {
+                    if (formOptionOption.value === 'Hosting') {
+                        hostingFields.style.display = 'block';
+                        hostingFields.querySelectorAll('select, input').forEach(field => {
+                            field.setAttribute('required', 'required');
+                        });
+                    } else {
+                        hostingFields.style.display = 'none';
+                        hostingFields.querySelectorAll('select, input').forEach(field => {
+                            field.removeAttribute('required');
+                        });
+                    }
+                });
 
                 form.addEventListener('submit', function (event) {
                     event.preventDefault();
@@ -622,8 +796,14 @@
                         jsonData[key] = value;
                     });
                     jsonData['approved'] = true;
+
                     // Log form data on the frontend
                     console.log('Submitted Data (Frontend):', jsonData);
+
+                    // Assuming you have a submitBtn defined somewhere in your HTML
+                    const submitBtn = document.getElementById('submitLinkBtn');
+                    submitBtn.textContent = 'Submitting...';
+                    submitBtn.disabled = true;
 
                     // Send form data to the backend
                     fetch('/submit', {
@@ -633,7 +813,13 @@
                         },
                         body: JSON.stringify(jsonData)
                     })
-                        .then(response => response.json())
+                        .then(response => {
+                            if (!response.ok) {
+                                // If the response status is not in the 200-299 range
+                                throw new Error(`HTTP error! status: ${response.status}`);
+                            }
+                            return response.json();
+                        })
                         .then(data => {
                             console.log('Response from Backend:', data);
                             alert("Links saved successfully");
@@ -641,13 +827,15 @@
                             window.location.href = '/admin';
                         })
                         .catch(error => {
-                            console.error('Error:', error);
                             alert("Error while saving the link");
+                            console.error('Error:', error);
+                            submitBtn.textContent = 'Submit'; // Reset button text
+                            submitBtn.disabled = false; // Enable the button
                         });
                 });
-                
             });
-          
+            // });
+
 
 
         </script>

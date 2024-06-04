@@ -18,7 +18,7 @@ const LinkSchema = new mongoose.Schema({
         type: String,
         enum: [
             'Albanian', 'Arabic', 'Azerbaijan', 'Chinese', 'Croatia', 'Czech', 'Danish', 'Dutch',
-            'English', 'French', 'Georgian', 'German', 'Greek', 'Indonesian', 'Italian it', 'Japanese jp',
+            'English', 'French', 'Georgian', 'German', 'Greek', 'Indonesian', 'Italian', 'Japanese',
             'Malaysian', 'N/A', 'Persian', 'Polish', 'Portuguese', 'Romanian', 'Russian', 'Serbian',
             'Spanish' , 'Thai', 'Turkish', 'Ukrainian', 'Uzbek', 'Vietnamese'
         ],
@@ -26,7 +26,7 @@ const LinkSchema = new mongoose.Schema({
     },
     info: {
         type: String,
-        maxlength: 200
+        maxlength: 2000
     },
     tor: {
         type: String,

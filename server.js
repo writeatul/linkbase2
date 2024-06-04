@@ -53,7 +53,7 @@ app.get("/register",(req,res)=>{
 
 app.get('/', (req, res) => {
     res.render('hosting', { hostings: hostingsData });
-});
+}); 
 
 // API endpoint to fetch hosting data
 app.get('/api/hostings', (req, res) => {
@@ -120,7 +120,7 @@ app.post('/register', async (req, res) => {
         res.status(500).json({ success: false, message: 'Internal server error' });
     }
 });
-
+ 
 app.post('/login', async (req, res) => {
     try {
 
@@ -140,7 +140,7 @@ app.post('/login', async (req, res) => {
         console.error('Login error:', error);
         res.status(500).json({ success: false, message: 'Internal server error' });
     }
-});
+}); 
 
 app.post('/submit', async (req, res) => {
     const formData = req.body;
@@ -267,7 +267,7 @@ app.get('/show-link-count',verifyToken, async (req, res) => {
         console.error(err);
         res.status(500).json({ error: 'Internal server error' });
     }
-});
+}); 
 
 
 app.delete('/messages/:id', verifyToken, async (req, res) => {
@@ -301,7 +301,7 @@ app.get('/hostings', async (req, res) => {
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: 'Internal server error' });
-    }
+    } 
 });
 
 app.get('/gethome', async (req, res) => {

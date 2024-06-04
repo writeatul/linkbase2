@@ -235,39 +235,45 @@
                 }
             });
             form.addEventListener('submit', function (event) {
-                event.preventDefault();
-                // Prevent the default form submission
-                // Get form data
-                const formData = new FormData(form);
-                // Convert form data to JSON
-                const jsonData = {};
-                formData.forEach((value, key) => {
-                    jsonData[key] = value;
-                });
+    event.preventDefault();
+    // Prevent the default form submission
+    document.getElementById('info').value = CKEDITOR.instances.info.getData();
+    // Get form data
+    const formData = new FormData(form);
+    // Convert form data to JSON
+    const jsonData = {};
+    formData.forEach((value, key) => {
+        jsonData[key] = value;
+    });
 
-                // Log form data on the frontend
-                console.log('Submitted Data (Frontend):', jsonData);
+    // Show saving data message
+    console.log('Saving Data...');
+    // Send form data to the backend
+    fetch('/submit', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(jsonData)
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Response from Backend:', data);
+        alert("Links saved successfully ");
+        // Change the URL and reload the page
+        window.location.href = '/';
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert("Error while saving the link. Please try again later.");
+    });
+});
 
-                // Send form data to the backend
-                fetch('/submit', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(jsonData)
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        console.log('Response from Backend:', data);
-                        alert("Links saved successfully ");
-                        // Change the URL and reload the page
-                        window.location.href = '/';
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        alert("Error while saving the link");
-                    });
-            });
 
             // Select all elements with the class 'dropdown-toggle'
             var dropdownToggles = document.querySelectorAll('.dropdown-toggle');

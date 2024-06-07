@@ -17,13 +17,11 @@
         .link-item {
             display: flex;
             align-items: center;
-            /* margin-bottom: 10px; */
             position: relative;
         }
 
         .link-item::before {
             content: '\f111';
-            /* FontAwesome icon code for circle */
             font-family: FontAwesome;
             margin-right: 10px;
             color: green;
@@ -39,7 +37,6 @@
             overflow: hidden;
             text-overflow: ellipsis;
             max-width: 80%;
-            /* Adjust as necessary */
             text-decoration: none;
             color: black;
         }
@@ -52,20 +49,45 @@
         .link-divider {
             height: 2px;
             background-color: #ccc;
-            /* margin: 5px 0 10px 0; */
         }
 
         h5.link-divider {
             font-size: 1.25rem;
             color: #333;
             border-bottom-width: 2px;
-            /* Slightly thicker for headings */
         }
 
         .container-custom {
             max-width: 900px;
-            /* Adjust the max-width as necessary */
             margin: 0 auto;
+        }
+
+        /* Loader styling */
+        #loader {
+            border: 16px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 16px solid #3498db;
+            width: 120px;
+            height: 120px;
+            animation: spin 2s linear infinite;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: none;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Error message styling */
+        #error-message {
+            color: red;
+            text-align: center;
+            display: none;
+            margin-top: 20px;
         }
     </style>
 </head>
@@ -74,9 +96,7 @@
     <%- include('nav') %>
 
         <div class="container container-custom mt-5">
-            <!-- <h3 style="text-align: center; text-decoration: underline;">Security and Hacking blog</h3> -->
-            <div class="breadcrumbs"
-                style="display: flex; align-items: center; background-color: #f4f4f4; padding: 4px;">
+            <div class="breadcrumbs" style="display: flex; align-items: center; background-color: #f4f4f4; padding: 4px;">
                 <ul style="list-style: none; display: flex; margin: 0; padding: 0;">
                     <li style="margin-right: 5px;">
                         <a href="/" style="text-decoration: none; color: #000;">Home</a>
@@ -87,6 +107,8 @@
                     </li>
                 </ul>
             </div>
+            <div id="loader"></div> <!-- Loader -->
+            <div id="error-message">Error loading data. Please try again later.</div> <!-- Error message -->
             <div id="links-container" class="row">
                 <!-- The data will be dynamically populated here -->
             </div>
@@ -94,105 +116,115 @@
 
         <script>
             document.addEventListener('DOMContentLoaded', async () => {
-                const response = await fetch('/get-links');
-                const data = await response.json();
+                const loader = document.getElementById('loader');
+                const errorMessage = document.getElementById('error-message');
                 const linksContainer = document.getElementById('links-container');
-                const languageMap = {};
 
-                // Map of language options to flag emojis
-                const flagMap = {
-                    "English": "🇬🇧",
-                    "German": "🇩🇪",
-                    "Russian": "🇷🇺",
-                    "Albanian": "🇦🇱",
-                    "Arabic": "🇸🇦",
-                    "Azerbaijan": "🇦🇿",
-                    "Chinese": "🇨🇳",
-                    "Croatia": "🇭🇷",
-                    "Czech": "🇨🇿",
-                    "Danish": "🇩🇰",
-                    "Dutch": "🇳🇱",
-                    "French": "🇫🇷",
-                    "Georgian": "🇬🇪",
-                    "Greek": "🇬🇷",
-                    "Indonesian": "🇮🇩",
-                    "Italian": "🇮🇹",
-                    "Japanese": "🇯🇵",
-                    "Malaysian": "🇲🇾",
-                    "Persian": "🇮🇷",
-                    "Polish": "🇵🇱",
-                    "Portuguese": "🇵🇹",
-                    "Romanian": "🇷🇴",
-                    "Serbian": "🇷🇸",
-                    "Spanish": "🇪🇸",
-                    "Thai": "🇹🇭",
-                    "Turkish": "🇹🇷",
-                    "Ukrainian": "🇺🇦",
-                    "Uzbek": "🇺🇿",
-                    "Vietnamese": "🇻🇳",
-                    "N/A": "❓"
-                };
+                try {
+                    loader.style.display = 'block'; // Show the loader
 
-                data.blogsdata.forEach(blog => {
-                    const languageOption = blog.languageOption;
-                    const flag = flagMap[languageOption] || "";
-
-                    if (!languageMap[languageOption]) {
-                        // Create a new section for the language
-                        const colDiv = document.createElement('div');
-                        colDiv.className = 'col-12 col-md-6 col-lg-3';
-
-                        const h5Tag = document.createElement('h5');
-                        h5Tag.textContent = `${languageOption} ${flag}`;
-                        h5Tag.style.fontWeight = '600';
-
-                        const linksDiv = document.createElement('div');
-                        linksDiv.className = 'links';
-
-                        colDiv.appendChild(h5Tag);
-                        colDiv.appendChild(linksDiv);
-                        linksContainer.appendChild(colDiv);
-
-                        languageMap[languageOption] = linksDiv;
+                    const response = await fetch('/get-links');
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
                     }
+                    const data = await response.json();
 
-                    // Create and append the link item
-                    const linkItem = document.createElement('div');
-                    linkItem.className = 'link-item';
+                    const languageMap = {};
 
-                    const link = document.createElement('a');
-                    link.href = blog.domain;
-                    link.target = '_blank'; // Open link in new tab
-                    link.textContent = blog.domainName;
-                    link.title = blog.domain; // Show full link on hover
+                    const flagMap = {
+                        "English": "🇬🇧",
+                        "German": "🇩🇪",
+                        "Russian": "🇷🇺",
+                        "Albanian": "🇦🇱",
+                        "Arabic": "🇸🇦",
+                        "Azerbaijan": "🇦🇿",
+                        "Chinese": "🇨🇳",
+                        "Croatia": "🇭🇷",
+                        "Czech": "🇨🇿",
+                        "Danish": "🇩🇰",
+                        "Dutch": "🇳🇱",
+                        "French": "🇫🇷",
+                        "Georgian": "🇬🇪",
+                        "Greek": "🇬🇷",
+                        "Indonesian": "🇮🇩",
+                        "Italian": "🇮🇹",
+                        "Japanese": "🇯🇵",
+                        "Malaysian": "🇲🇾",
+                        "Persian": "🇮🇷",
+                        "Polish": "🇵🇱",
+                        "Portuguese": "🇵🇹",
+                        "Romanian": "🇷🇴",
+                        "Serbian": "🇷🇸",
+                        "Spanish": "🇪🇸",
+                        "Thai": "🇹🇭",
+                        "Turkish": "🇹🇷",
+                        "Ukrainian": "🇺🇦",
+                        "Uzbek": "🇺🇿",
+                        "Vietnamese": "🇻🇳",
+                        "N/A": "❓"
+                    };
 
-                    link.addEventListener('click', (e) => {
-                        if (link.classList.contains('full')) {
-                            return;
+                    data.blogsdata.forEach(blog => {
+                        const languageOption = blog.languageOption;
+                        const flag = flagMap[languageOption] || "";
+
+                        if (!languageMap[languageOption]) {
+                            const colDiv = document.createElement('div');
+                            colDiv.className = 'col-12 col-md-6 col-lg-3';
+
+                            const h5Tag = document.createElement('h5');
+                            h5Tag.textContent = `${languageOption} ${flag}`;
+                            h5Tag.style.fontWeight = '600';
+
+                            const linksDiv = document.createElement('div');
+                            linksDiv.className = 'links';
+
+                            colDiv.appendChild(h5Tag);
+                            colDiv.appendChild(linksDiv);
+                            linksContainer.appendChild(colDiv);
+
+                            languageMap[languageOption] = linksDiv;
                         }
-                        e.preventDefault();
-                        link.classList.toggle('full');
+
+                        const linkItem = document.createElement('div');
+                        linkItem.className = 'link-item';
+
+                        const link = document.createElement('a');
+                        link.href = blog.domain;
+                        link.target = '_blank';
+                        link.textContent = blog.domainName;
+                        link.title = blog.domain;
+
+                        link.addEventListener('click', (e) => {
+                            if (link.classList.contains('full')) {
+                                return;
+                            }
+                            e.preventDefault();
+                            link.classList.toggle('full');
+                        });
+
+                        const divider = document.createElement('div');
+                        divider.className = 'link-divider';
+                        languageMap[languageOption].appendChild(divider);
+
+                        linkItem.appendChild(link);
+                        languageMap[languageOption].appendChild(linkItem);
                     });
 
-                    // Add a divider line below each link item
-                    const divider = document.createElement('div');
-                    divider.className = 'link-divider';
-                    languageMap[languageOption].appendChild(divider);
-
-                    linkItem.appendChild(link);
-                    languageMap[languageOption].appendChild(linkItem);
-
-                });
-
-                // Event listener to collapse expanded links when clicking outside
-                document.addEventListener('click', (event) => {
-                    const expandedLinks = document.querySelectorAll('.link-item a.full');
-                    expandedLinks.forEach(link => {
-                        if (!link.contains(event.target)) {
-                            link.classList.remove('full');
-                        }
+                    document.addEventListener('click', (event) => {
+                        const expandedLinks = document.querySelectorAll('.link-item a.full');
+                        expandedLinks.forEach(link => {
+                            if (!link.contains(event.target)) {
+                                link.classList.remove('full');
+                            }
+                        });
                     });
-                });
+
+                    loader.style.display = 'none'; // Hide the loader
+                } catch (error) {
+                    loader.style.display = 'none'; // Hide the loader
+                    errorMessage.style.display = 'block'; // Show the error message
+                }
             });
         </script>
 </body>

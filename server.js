@@ -13,8 +13,8 @@ const addlink=require("./model/addLinkSchema");
 const userSchema=require("./model/userschema");
 db.on("error", (error) => {
     console.error("database connection error " + error);
-});
-
+}); 
+    
 db.once("open", () => {
     console.log("mongoDb connected successfully");
 }); 
@@ -39,17 +39,6 @@ app.get("/login",(req,res)=>{
 app.get("/register",(req,res)=>{
     res.render("register");
 })
-// const hostingsData = [
-//     { service: 'Bahnhof', serviceLink: '#', paypal: true, creditcard: true, webmoney: false, bitcoin: false, locations: ['Sweden'], twitter: 'BahnhofAB', facebook: 'B4hnhof' },
-//     { service: 'Bpw', serviceLink: '#', paypal: true, creditcard: true, webmoney: true, bitcoin: true, locations: ['Netherlands', 'Moldova', 'Russia', 'Ukraine', 'Sweden'], twitter: 'BulletProofweb', facebook: 'bulletproofweb' },
-//     { service: 'Bullethost', serviceLink: '#', paypal: true, creditcard: false, webmoney: false, bitcoin: true, locations: ['Netherlands'], twitter: '', facebook: 'bullethostservices' },
-//     { service: 'Cast-Security', serviceLink: '#', paypal: false, creditcard: false, webmoney: false, bitcoin: true, locations: ['Canada', 'France', 'Germany', 'Poland'], twitter: '', facebook: '' },
-//     { service: 'Ccihosting', serviceLink: '#', paypal: true, creditcard: true, webmoney: false, bitcoin: true, locations: ['Panama'], twitter: '', facebook: 'CCIHosting' },
-//     { service: 'Cloud4box', serviceLink: '#', paypal: false, creditcard: true, webmoney: true, bitcoin: true, locations: ['Russia'], twitter: '', facebook: 'groups/cloud4box/about/' },
-//     { service: 'Ddos-Guard', serviceLink: '#', paypal: false, creditcard: true, webmoney: true, bitcoin: true, locations: ['USA', 'Netherlands', 'Germany', 'Russia', 'Japan'], twitter: 'ddosguard', facebook: 'ddosguard' },
-//     { service: 'Dedi', serviceLink: '#', paypal: true, creditcard: false, webmoney: false, bitcoin: true, locations: ['Albania', 'Netherlands', 'Norway', 'Hong Kong', 'USA (Chicago,New York,Los Angeles)', 'Switzerland', 'United Kingdom', 'Spain', 'Austria', 'Italy', 'Poland', 'Australia'], twitter: '', facebook: '' },
-//     { service: 'Flokinet', serviceLink: '#', paypal: true, creditcard: false, webmoney: false, bitcoin: true, locations: ['Iceland', 'Romania', 'Finland'], twitter: 'flokinetehf', facebook: '' }
-// ];
 
 app.get('/', (req, res) => {
     res.render('hosting', { hostings: hostingsData });
@@ -132,7 +121,7 @@ app.post('/login', async (req, res) => {
         }
 
         // Generate JWT token
-        const token = jwt.sign({ userId: user._id },"thissisme" , { expiresIn: '1h' });
+        const token = jwt.sign({ userId: user._id },process.env.JWT_SECRET, { expiresIn: '1h' });
 
         // Send success response with token
         res.status(200).json({ success: true, token: token });
@@ -394,7 +383,7 @@ app.get('/getvpn', async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 });
-
+ 
 app.get('/getgaming', async (req, res) => {
     try {
         const gamingdata = await addlink.find({

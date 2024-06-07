@@ -357,7 +357,7 @@
                         if (response.status === 401 || response.status === 403) {
                             showError('Your session has expired or your token is invalid. Please log in again.');
                             localStorage.removeItem('token');
-                            setTimeout(() => { window.location.href = '/login'; }, 1000);
+                            setTimeout(() => { window.location.href = '/login'; }, 0.5);
                         } else if (response.status === 404) {
                             showError('The requested resource was not found.');
                         } else if (response.status === 500) {
@@ -758,7 +758,7 @@
                             // Redirect to login page after 1 second
                             setTimeout(() => {
                                 window.location.href = '/login';
-                            }, 1000);
+                            }, 0.5);
                         }
                         throw Error(response.statusText);
                     }
